@@ -31,7 +31,7 @@ public class MemberServiceImpl implements MemberService{
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(KAKAO_LOGIN_API_BASE_URL)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .build();
 
         JsonNode response = webClient.post()
@@ -39,7 +39,8 @@ public class MemberServiceImpl implements MemberService{
                         .path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id",KAKAO_API_KEY)
-                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")                 // 수정 필요
+//                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")
+                        .queryParam("redirect_uri", "http://localhost:3000/oauth/kakao/callback")                 // 수정 필요
                         .queryParam("code",code)
                         .build())
                 .retrieve().bodyToMono(JsonNode.class).block();
