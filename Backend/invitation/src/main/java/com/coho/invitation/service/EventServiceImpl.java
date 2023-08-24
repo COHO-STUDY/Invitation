@@ -4,6 +4,8 @@ import com.coho.invitation.dto.Event;
 import com.coho.invitation.mapper.EventMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EventServiceImpl implements EventService{
     private final EventMapper eventMapper;
@@ -12,6 +14,18 @@ public class EventServiceImpl implements EventService{
         this.eventMapper = eventMapper;
     }
 
+    @Override
+    public List<Event> getEventList(String uid){
+        return eventMapper.getEventList(uid);
+    }
+    @Override
+    public List<Event> getEventsProgressing(String uid){
+        return eventMapper.getEventsProgressing(uid);
+    }
+    @Override
+    public List<Event> getEventsDone(String uid){
+        return eventMapper.getEventsDone(uid);
+    }
     @Override
     public void insertEvent(Event event){
         eventMapper.insertEvent(event);

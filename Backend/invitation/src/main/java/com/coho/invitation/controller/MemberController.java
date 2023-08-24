@@ -27,13 +27,14 @@ public class MemberController {
     }
 
     /* 카카오 로그인 */
-    @PostMapping("/kakao")
-//    public String kakaoCallback(@RequestBody JsonNode params){
-    public ResponseEntity<?> kakaoCallback(@RequestBody JsonNode params){
+    @GetMapping("/kakao")               // 백엔드 테스트용
+    public ResponseEntity<?> getKakaoEmail(@RequestParam String code){
+//    @PostMapping("/kakao")
+//    public ResponseEntity<?> kakaoCallback(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
         HttpHeaders headers = new HttpHeaders();
 
-        String code = params.get("code").asText();
+//        String code = params.get("code").asText();
         System.out.println(code);
 
         // 토큰 발급 요청
@@ -46,12 +47,11 @@ public class MemberController {
         if(memberService.getMember(member.getUid()).isEmpty())
             memberService.insertMember(member);
 
+        // session에 uid 추가
         session.setAttribute("uid",member.getUid());
 
         headers.setLocation(URI.create("/api/events"));
-
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-//        return member.getUid();
     }
 
     /* 카카오 이메일 정보 추가로 가져오기 */

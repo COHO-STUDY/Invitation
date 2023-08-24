@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
@@ -24,13 +25,31 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    /* 로그인한 사용자의 전체 행사 목록 가져오기 */
     @GetMapping("")
-    public String getEvents(){
+    public List<Event> getEvents(){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
 
+        List<Event> eventList = eventService.getEventList(uid);
 
-        return uid;
+        return eventList;
+    }
+
+    @GetMapping("/progressing")
+    public List<Event> getEventsProgressing(){
+        HttpSession session = request.getSession();
+        String uid = (String) session.getAttribute("uid");
+        List<Event> eventList = eventService.getEventsProgressing(uid);
+        return eventList;
+    }
+
+    @GetMapping("/done")
+    public List<Event> getEventsDone(){
+        HttpSession session = request.getSession();
+        String uid = (String) session.getAttribute("uid");
+        List<Event> eventList = eventService.getEventsDone(uid);
+        return eventList;
     }
 
 //    @GetMapping("/{eid}")
@@ -38,6 +57,7 @@ public class EventController {
 //        return "";
 //    }
 
+    /* 행사 추가하기 */
     @PostMapping("")
     public String addEvent(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -56,6 +76,16 @@ public class EventController {
         eventService.insertManage(uid,event.getEid());
 
         return event.getEid();
+    }
+
+    @PutMapping("")
+    public String updateEvent(){
+        return "";
+    }
+
+    @DeleteMapping("")
+    public String deleteEvent(){
+        return "";
     }
 
 }
