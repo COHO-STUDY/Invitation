@@ -41,7 +41,9 @@ public class EventController {
     public List<Event> getEventsProgressing(){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
+
         List<Event> eventList = eventService.getEventsProgressing(uid);
+
         return eventList;
     }
 
@@ -49,14 +51,21 @@ public class EventController {
     public List<Event> getEventsDone(){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
+
         List<Event> eventList = eventService.getEventsDone(uid);
+
         return eventList;
     }
 
-//    @GetMapping("/{eid}")
-//    public String getEvent(){
-//        return "";
-//    }
+    @GetMapping("/{eid}")
+    public Event getEvent(@PathVariable("eid") String eid){
+        HttpSession session = request.getSession();
+        String uid = (String) session.getAttribute("uid");
+
+        Event event = eventService.getEvent(eid);
+
+        return event;
+    }
 
     /* 행사 추가하기 */
     @PostMapping("")

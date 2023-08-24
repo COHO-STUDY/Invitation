@@ -27,6 +27,10 @@ public class EventServiceImpl implements EventService{
         return eventMapper.getEventsDone(uid);
     }
     @Override
+    public Event getEvent(String eid){
+        return eventMapper.getEvent(eid);
+    }
+    @Override
     public void insertEvent(Event event){
         eventMapper.insertEvent(event);
     }

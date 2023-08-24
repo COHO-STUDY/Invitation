@@ -30,9 +30,11 @@
                       where M.muid=#{uid}) and edate &lt;= now();
     </select>
 
-<!--    <select id="getEvent" parameterType="String" resultType="Event">-->
-<!--        -->
-<!--    </select>-->
+    <select id="getEvent" parameterType="String" resultType="Event">
+        select *
+        from event
+        where eid = #{eid};
+    </select>
 
     <insert id="insertEvent" parameterType="Event">
         insert into event
