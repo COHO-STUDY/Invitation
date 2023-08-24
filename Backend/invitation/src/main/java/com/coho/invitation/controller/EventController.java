@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/events")
@@ -66,7 +67,7 @@ public class EventController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
         // 실제 event 값 설정
-        event.setEid(uid+"_"+formatter.format(LocalDateTime.now()));
+        event.setEid(UUID.randomUUID().toString());
         event.setEtype(params.get("type").asText());
         event.setEdate(LocalDateTime.parse(params.get("datetime").asText()),formatter);
         event.setLocation(params.get("location").asText());

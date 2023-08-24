@@ -27,14 +27,14 @@ public class MemberController {
     }
 
     /* 카카오 로그인 */
-    @GetMapping("/kakao")               // 백엔드 테스트용
-    public ResponseEntity<?> getKakaoEmail(@RequestParam String code){
-//    @PostMapping("/kakao")
-//    public ResponseEntity<?> kakaoCallback(@RequestBody JsonNode params){
+//    @GetMapping("/kakao")               // 백엔드 테스트용
+//    public ResponseEntity<?> getKakaoEmail(@RequestParam String code){
+    @PostMapping("/kakao")
+    public ResponseEntity<?> kakaoCallback(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
         HttpHeaders headers = new HttpHeaders();
 
-//        String code = params.get("code").asText();
+        String code = params.get("code").asText();
         System.out.println(code);
 
         // 토큰 발급 요청
