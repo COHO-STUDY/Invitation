@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/members")
@@ -29,12 +28,11 @@ public class MemberController {
 
     /* 카카오 로그인 */
     @PostMapping("/kakao")
-    public String kakaoCallback(@RequestBody JsonNode params){
-//    public ResponseEntity<?> kakaoCallback(@RequestBody JsonNode params){
+//    public String kakaoCallback(@RequestBody JsonNode params){
+    public ResponseEntity<?> kakaoCallback(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
-//        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
 
-//        System.out.println(params);
         String code = params.get("code").asText();
         System.out.println(code);
 
@@ -50,10 +48,10 @@ public class MemberController {
 
         session.setAttribute("uid",member.getUid());
 
-//        headers.setLocation(URI.create("/api/events"));
+        headers.setLocation(URI.create("/api/events"));
 
-//        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-        return member.getUid();
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+//        return member.getUid();
     }
 
     /* 카카오 이메일 정보 추가로 가져오기 */

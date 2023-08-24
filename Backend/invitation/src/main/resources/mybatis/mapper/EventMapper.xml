@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.coho.invitation.mapper.EventMapper">
+    <!-- 수정해야함 -->
+
+<!--    <select id="getEventList" parameterType="String" resultType="Event">-->
+<!--        -->
+<!--    </select>-->
+
+<!--    <select id="getEvent" parameterType="String" resultType="Event">-->
+<!--        -->
+<!--    </select>-->
+
+    <insert id="insertEvent" parameterType="Event">
+        insert into event
+        values(#{eid},#{etype},#{edate},#{location},#{ehost});
+    </insert>
+
+    <insert id="insertManage" parameterType="Map">
+        insert into manage
+        values (NOW(),#{muid}, #{eid});
+    </insert>
+
+</mapper>
