@@ -13,7 +13,11 @@ public interface EventMapper {
     List<Event> getEventList(String uid);
     List<Event> getEventsProgressing(String uid);
     List<Event> getEventsDone(String uid);
-    Event getEvent(@Param("eid") String eid);
+    Event getEvent(String eid);
+    List<String> checkAuthority(String eid);
     void insertEvent(Event event);
     void insertManage(@Param("muid") String uid, @Param("eid") String eid);
+    void updateEvent(Event event);
+    void deleteEvent(String eid);
+    void deleteAuthority(@Param("eid") String eid, @Param("muid") String muid);
 }

@@ -36,6 +36,12 @@
         where eid = #{eid};
     </select>
 
+    <select id="checkAuthority" parameterType="String" resultType="String">
+        select muid
+        from manage
+        where eid=#{eid};
+    </select>
+
     <insert id="insertEvent" parameterType="Event">
         insert into event
         values(#{eid},#{etype},#{edate},#{location},#{ehost});
@@ -45,5 +51,22 @@
         insert into manage
         values (NOW(),#{muid}, #{eid});
     </insert>
+
+    <update id="updateEvent" parameterType="Event">
+        update event
+        set etype=#{etype},
+            edate = str_to_date(#{edate},'%Y-%m-%d %H:%i:%s'),
+            location=#{location},
+            ehost=#{ehost}
+        where eid=#{eid};
+    </update>
+
+    <delete id="deleteEvent" parameterType="String">
+        delete from event where eid=#{eid};
+    </delete>
+
+    <delete id="deleteAuthority" parameterType="Map">
+        delete from manage where eid=#{eid} and muid=#{muid};
+    </delete>
 
 </mapper>
