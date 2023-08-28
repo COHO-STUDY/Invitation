@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -28,51 +29,51 @@ public class EventController {
 
     /* 로그인한 사용자의 전체 행사 목록 가져오기 */
     @GetMapping("")
-    public List<Event> getEvents(){
+    public ResponseEntity<List<Event>> getEvents(){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
 
         List<Event> eventList = eventService.getEventList(uid);
 
-        return eventList;
+        return ResponseEntity.ok().body(eventList);
     }
 
     /* 로그인한 사용자의 진행중인 행사 목록 가져오기 */
     @GetMapping("/progressing")
-    public List<Event> getEventsProgressing(){
+    public ResponseEntity<List<Event>> getEventsProgressing(){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
 
         List<Event> eventList = eventService.getEventsProgressing(uid);
 
-        return eventList;
+        return ResponseEntity.ok().body(eventList);
     }
 
     /* 로그인한 사용자의 진행 완료된 행사 목록 가져오기 */
     @GetMapping("/done")
-    public List<Event> getEventsDone(){
+    public ResponseEntity<List<Event>> getEventsDone(){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
 
         List<Event> eventList = eventService.getEventsDone(uid);
 
-        return eventList;
+        return ResponseEntity.ok().body(eventList);
     }
 
     /* 선택한 행사 조회 */
     @GetMapping("/{eid}")
-    public Event getEvent(@PathVariable("eid") String eid){
+    public ResponseEntity<Event> getEvent(@PathVariable("eid") String eid){
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
 
-        /* 권한이 없다면 조회 불가능 */
+        /* 권한이 없다면 조회 불가능 - spring interceptor로..? */
         if(!eventService.checkAuthority(eid).contains(uid))
             return null;
 
         //선택한 행사 조회
         Event event = eventService.getEvent(eid);
 
-        return event;
+        return ResponseEntity.ok().body(event);
     }
 
     /* 행사 추가하기 */
@@ -96,7 +97,8 @@ public class EventController {
         return event.getEid();
     }
 
-    /* 행사 권한자 추가하기 */
+    /* 행사 권한자 추가하기
+    * 행사 권한자를 어떻게 호출할 것인가(백 or 프론트)*/
     @PostMapping("/auth/{eid}")
     public String addAuthority(@PathVariable("eid") String eid, @RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -121,9 +123,9 @@ public class EventController {
 
         event.setEid(eid);
 
-        /* 권한이 있을 경우에만 수정 가능 - 행사 페이지 안에서 삭제시 필요X */
-        if(!eventService.checkAuthority(eid).contains(uid))
-            return "권한이 없습니다.";     // 임의로 넣어놓음
+        /* 권한이 있을 경우에만 수정 가능 */
+//        if(!eventService.checkAuthority(eid).contains(uid))
+//            return "권한이 없습니다.";     // 임의로 넣어놓음
 
         // 행사 수정
         eventService.updateEvent(event);

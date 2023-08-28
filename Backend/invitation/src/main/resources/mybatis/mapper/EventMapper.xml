@@ -3,7 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.coho.invitation.mapper.EventMapper">
-    <!-- 수정해야함 -->
 
     <select id="getEventList" parameterType="String" resultType="hashmap">
         select *
@@ -13,13 +12,15 @@
                       where M.muid=#{uid});
     </select>
 
+    <!-- 행사날짜로 order by -->
     <select id="getEventsProgressing" parameterType="String" resultType="hashmap">
         select *
         from event
         where eid in (select M.eid
                       from manage M
                       where M.muid=#{uid})
-          and edate &gt; now();
+          and edate &gt; now()
+        order by edate asc;
     </select>
 
     <select id="getEventsDone" parameterType="String" resultType="hashmap">
@@ -27,7 +28,9 @@
         from event
         where eid in (select M.eid
                       from manage M
-                      where M.muid=#{uid}) and edate &lt;= now();
+                      where M.muid=#{uid}) 
+          and edate &lt;= now()
+        order by edate asc;
     </select>
 
     <select id="getEvent" parameterType="String" resultType="Event">
