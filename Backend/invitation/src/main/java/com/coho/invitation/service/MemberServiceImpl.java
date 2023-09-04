@@ -26,8 +26,8 @@ public class MemberServiceImpl implements MemberService{
 
     /* 카카오 토큰 받기 */
     @Override
-    public String getKakaoAccessToken(String code) {
-        String access_token = "";
+    public String[] getKakaoAccessToken(String code) {
+        String[] tokens = {"",""};
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(KAKAO_LOGIN_API_BASE_URL)
@@ -45,11 +45,10 @@ public class MemberServiceImpl implements MemberService{
                         .build())
                 .retrieve().bodyToMono(JsonNode.class).block();
 
-        access_token = response.get("access_token").asText();
-//        id_token = token.get("id_token").asText();
-//        refresh_token = token.get("refresh_token").asText();
+        tokens[0] = response.get("access_token").asText();
+        tokens[1] = response.get("refresh_token").asText();
 
-        return access_token;
+        return tokens;
     }
 
     /* 사용자 정보 가져오기 */
@@ -92,5 +91,15 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void insertMember(Member member){
         memberMapper.insertMember(member);
+    }
+
+    @Override
+    public void updateMember(Member member){
+        memberMapper.updateMember(member);
+    }
+
+    @Override
+    public void deleteMember(String uid){
+        memberMapper.deleteMember(uid);
     }
 }

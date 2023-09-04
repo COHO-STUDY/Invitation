@@ -11,6 +11,13 @@ import java.util.Optional;
 @Repository
 public interface MemberMapper {
     Optional<Member> getMember(String uid);
+
     List<Member> getMemberList();
+
     void insertMember(Member member);
+
+    void updateMember(Member member);
+
+    void deleteMember(String uid);
+
 }

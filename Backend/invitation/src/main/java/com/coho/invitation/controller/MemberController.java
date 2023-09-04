@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/members")
 @CrossOrigin(origins = "*")
@@ -23,22 +25,19 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    /* 카카오 로그인 */
-//    @GetMapping("/kakao")               // 백엔드 테스트용
-//    public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
-    @PostMapping("/kakao")
+    /* 카카오 로그인 - 웹 */
+    @PostMapping("/kakao/web")
     public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
         HttpHeaders headers = new HttpHeaders();
 
         String code = params.get("code").asText();
-        System.out.println(code);
 
         // 토큰 발급 요청
-        String access_token = memberService.getKakaoAccessToken(code);
+        String[] tokens = memberService.getKakaoAccessToken(code);
 
         // 사용자 정보 가져오기
-        Member member = memberService.getUserInfo(access_token);
+        Member member = memberService.getUserInfo(tokens[0]);
 
         // 회원 정보 확인하여 처음 로그인한 회원이면 회원가입
         if(memberService.getMember(member.getUid()).isEmpty())
@@ -47,8 +46,33 @@ public class MemberController {
         // session에 uid 추가
         session.setAttribute("uid",member.getUid());
         // access_token, refresh_token도 session에 저장
+        session.setAttribute("access_token",tokens[0]);
+        session.setAttribute("refresh_token",tokens[1]);
 
         return ResponseEntity.ok().headers(headers).body(member);
+    }
+
+    /* 카카오 로그인 - 안드로이드 */
+    @PostMapping("/kakao/android/")
+    public ResponseEntity<Member> kakaoLoginAndroid(@RequestBody JsonNode params){
+        Member member;
+
+        String uid = "K" + params.get("userId").asText();
+        String access_token = params.get("accessToken").asText();
+
+        Optional<Member> savedMember= memberService.getMember(uid);
+
+        // 처음 로그인한 사용자 : 회원가입
+        if(savedMember.isEmpty()){
+            // 사용자 정보 가져오기
+            member = memberService.getUserInfo(access_token);
+            memberService.insertMember(member);
+        }
+        // 로그인
+        else
+            member = savedMember.get();
+
+        return ResponseEntity.ok().body(member);
     }
 
     /* 카카오 이메일 정보 추가로 가져오기 */
@@ -58,18 +82,29 @@ public class MemberController {
 //        return "";
 //    }
 
-    /* 회원 로그인 */
-//    @GetMapping("/{uid}")
-//    public String login(){
-//        return "login";
-//    }
+    /* 회원 정보 수정 */
+    @PutMapping("")
+    public ResponseEntity<String> updateUserInfo(@RequestBody JsonNode params){
+        HttpSession session = request.getSession();
+        String uid = (String) session.getAttribute("uid");
+        Member member = new Member();
+        member.setUid(uid);
+        member.setName(params.get("name").asText());
+        member.setEmail(params.get("email").asText());
 
-    /* 회원가입(처음 로그인 시) */
-//    @PostMapping("/")
-//    public String create(){
-//        return "create users";
-//    }
+        memberService.updateMember(member);
 
+        return ResponseEntity.ok().body(uid);
+    }
 
+    /* 회원 탈퇴 */
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteUser(){
+        HttpSession session = request.getSession();
+        String uid = (String) session.getAttribute("uid");
 
+        memberService.deleteMember(uid);
+
+        return ResponseEntity.ok().body(uid);
+    }
 }

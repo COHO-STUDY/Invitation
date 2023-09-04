@@ -18,4 +18,17 @@
         insert into member
         values (#{uid},#{name},#{email},#{auth});
     </insert>
+
+    <update id="updateMember" parameterType="Member">
+        update member
+        set name = #{name},
+            email=#{email}
+        where uid = #{uid};
+    </update>
+
+    <delete id="deleteMember" parameterType="String">
+        update member
+        set auth = 'N'
+        where uid = #{uid};
+    </delete>
 </mapper>
