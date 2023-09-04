@@ -1,7 +1,5 @@
 package com.coho.invitation.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

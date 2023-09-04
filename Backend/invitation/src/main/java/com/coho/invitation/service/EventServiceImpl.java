@@ -2,11 +2,9 @@ package com.coho.invitation.service;
 
 import com.coho.invitation.dto.Event;
 import com.coho.invitation.mapper.EventMapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService{

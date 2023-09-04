@@ -1,10 +1,8 @@
 package com.coho.invitation.service;
 
 import com.coho.invitation.dto.Event;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface EventService {
     List<Event> getEventList(String uid);

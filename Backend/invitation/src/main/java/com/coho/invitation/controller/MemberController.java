@@ -7,11 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/members")
@@ -28,7 +25,7 @@ public class MemberController {
 
     /* 카카오 로그인 */
 //    @GetMapping("/kakao")               // 백엔드 테스트용
-//    public ResponseEntity<Member> kakaoCallback(@RequestParam String code){
+//    public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
     @PostMapping("/kakao")
     public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -49,6 +46,7 @@ public class MemberController {
 
         // session에 uid 추가
         session.setAttribute("uid",member.getUid());
+        // access_token, refresh_token도 session에 저장
 
         return ResponseEntity.ok().headers(headers).body(member);
     }
