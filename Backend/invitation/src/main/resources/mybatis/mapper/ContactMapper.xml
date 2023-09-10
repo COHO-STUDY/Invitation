@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coho.invitation.mapper.ContactMapper">
+    <select id="getContactList" parameterType="Map" resultType="HashMap">
+        select *
+        from contact
+        where muid=#{uid} and eid=#{eid}
+            <if test="con != null">
+                and name like CONCAT('%',#{con},'%')
+            </if>
+        order by is_sent asc,is_kakao_used desc;
+    </select>
+
+    <insert id="addContacts" parameterType="Contact">
+        insert into contact
+        values (#{contactId}, #{muid}, #{eid}, #{name}, #{phoneNum},0,#{is_kakao_used});
+    </insert>
+
+    <update id="checkSent" parameterType="Map">
+        update contact
+        set is_sent = #{is_sent}
+        where contact_id=#{contactId} and muid=#{muid} and eid=#{eid};
+    </update>
+
+    <update id="updateContact" parameterType="Contact">
+        update contact
+        set <if test="name != ''">
+                name = #{name}
+            </if>
+            <if test="phoneNum != ''">
+                , phone_num = #{phoneNum}
+            </if>
+        where contact_id=#{contactId} and muid=#{muid} and eid=#{eid};
+    </update>
+
+    <delete id="deleteContact" parameterType="Map">
+        delete from contact
+        where contact_id=#{contactId} and muid=#{muid} and eid=#{eid};
+    </delete>
+
+</mapper>
