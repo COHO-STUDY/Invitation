@@ -25,6 +25,17 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    /* 로그인한 사용자의 정보 조회 */
+    @GetMapping("")
+    public ResponseEntity<Member> getMember(){
+        HttpSession session = request.getSession();
+        String uid = (String) session.getAttribute("uid");
+
+        Member member = memberService.getMember(uid).get();
+
+        return ResponseEntity.ok().body(member);
+    }
+
     /* 카카오 로그인 - 웹 */
     @PostMapping("/kakao/web")
     public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
