@@ -72,4 +72,14 @@
         delete from manage where eid=#{eid} and muid=#{muid};
     </delete>
 
+    <delete id="deleteManage" parameterType="String">
+        delete from manage where muid=#{muid};
+    </delete>
+
+    <select id="findEventId" resultType="HashMap">
+        select eid
+        from event
+        where eid not in (select distinct m.eid from manage m);
+    </select>
+
 </mapper>

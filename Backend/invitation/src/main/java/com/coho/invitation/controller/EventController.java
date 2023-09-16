@@ -19,8 +19,6 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 public class EventController {
     @Autowired
-    private HttpServletRequest request;
-    @Autowired
     private EventService eventService;
 
     public EventController(EventService eventService) {
@@ -30,8 +28,7 @@ public class EventController {
     /* 로그인한 사용자의 전체 행사 목록 가져오기 */
     @GetMapping("")
     public ResponseEntity<List<Event>> getEvents(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
 
         List<Event> eventList = eventService.getEventList(uid);
 
@@ -41,8 +38,7 @@ public class EventController {
     /* 로그인한 사용자의 진행중인 행사 목록 가져오기 */
     @GetMapping("/progressing")
     public ResponseEntity<List<Event>> getEventsProgressing(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
 
         List<Event> eventList = eventService.getEventsProgressing(uid);
 
@@ -52,8 +48,7 @@ public class EventController {
     /* 로그인한 사용자의 진행 완료된 행사 목록 가져오기 */
     @GetMapping("/done")
     public ResponseEntity<List<Event>> getEventsDone(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
 
         List<Event> eventList = eventService.getEventsDone(uid);
 
@@ -63,8 +58,7 @@ public class EventController {
     /* 선택한 행사 조회 */
     @GetMapping("/{eid}")
     public ResponseEntity<Event> getEvent(@PathVariable("eid") String eid){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
 
         /* 권한이 없다면 조회 불가능 - spring interceptor로..? */
         if(!eventService.checkAuthority(eid).contains(uid))
@@ -79,10 +73,11 @@ public class EventController {
     /* 행사 추가하기 */
     @PostMapping("")
     public String addEvent(@RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
         Event event = new Event();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+        System.out.println(uid);
 
         // 실제 event 값 설정
         event.setEid(UUID.randomUUID().toString());
@@ -101,8 +96,7 @@ public class EventController {
     * 행사 권한자를 어떻게 호출할 것인가(백 or 프론트)*/
     @PostMapping("/auth/{eid}")
     public String addAuthority(@PathVariable("eid") String eid, @RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
         String newUid = params.get("uid").asText();
 
         // 현재 사용자가 권한자 인지 확인
@@ -117,11 +111,15 @@ public class EventController {
 
     /* 행사 정보 수정하기 */
     @PutMapping("/{eid}")
-    public String updateEvent(@PathVariable("eid") String eid, @RequestBody Event event){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
-
+    public String updateEvent(@PathVariable("eid") String eid, @RequestBody JsonNode params){
+        String uid = "K2979874325";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        Event event = new Event();
         event.setEid(eid);
+        event.setEtype(params.get("type").asText());
+        event.setEdate(LocalDateTime.parse(params.get("datetime").asText()),formatter);
+        event.setLocation(params.get("location").asText());
+        event.setEhost(params.get("host").toString());
 
         /* 권한이 있을 경우에만 수정 가능 */
 //        if(!eventService.checkAuthority(eid).contains(uid))
@@ -136,8 +134,7 @@ public class EventController {
     /* 행사 삭제하기 */
     @DeleteMapping("/{eid}")
     public String deleteEvent(@PathVariable("eid") String eid){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
 
         /* 권한이 있을 경우에만 삭제 가능 - 행사 페이지 안에서 삭제시 필요X */
         if(!eventService.checkAuthority(eid).contains(uid))
@@ -152,8 +149,7 @@ public class EventController {
     /* 행사의 권한 삭제 - 자기 자신만 가능 */
     @DeleteMapping("/auth/{eid}")
     public String deleteAuthority(@PathVariable("eid") String eid){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = "K2979874325";
 
         /* 현재 로그인한 사용자의 행사 권한 삭제 */
         eventService.deleteAuthority(eid,uid);

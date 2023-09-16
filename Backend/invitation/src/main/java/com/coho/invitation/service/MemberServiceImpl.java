@@ -1,6 +1,7 @@
 package com.coho.invitation.service;
 
 import com.coho.invitation.dto.Member;
+import com.coho.invitation.mapper.EventMapper;
 import com.coho.invitation.mapper.MemberMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,13 +16,15 @@ import java.util.Optional;
 @Service
 public class MemberServiceImpl implements MemberService{
     private final MemberMapper memberMapper;
+    private final EventMapper eventMapper;
     private static final String KAKAO_LOGIN_API_BASE_URL="https://kauth.kakao.com";
     private static final String KAKAO_API_BASE_URL = "https://kapi.kakao.com";
     @Value("${KAKAO_API_KEY}")
     private String KAKAO_API_KEY;
 
-    public MemberServiceImpl(MemberMapper memberMapper) {
+    public MemberServiceImpl(MemberMapper memberMapper, EventMapper eventMapper) {
         this.memberMapper = memberMapper;
+        this.eventMapper = eventMapper;
     }
 
     /* 카카오 토큰 받기 */
@@ -39,8 +42,8 @@ public class MemberServiceImpl implements MemberService{
                         .path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id",KAKAO_API_KEY)
-                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")                // 백
-//                        .queryParam("redirect_uri", "http://localhost:3000/oauth/kakao/callback")   // 프론트
+//                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")                // 백
+                        .queryParam("redirect_uri", "http://localhost:3000/oauth/kakao/callback")   // 프론트
                         .queryParam("code",code)
                         .build())
                 .retrieve().bodyToMono(JsonNode.class).block();
@@ -101,5 +104,8 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void deleteMember(String uid){
         memberMapper.deleteMember(uid);
+        eventMapper.deleteManage(uid);
     }
+
+
 }

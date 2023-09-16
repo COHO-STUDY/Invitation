@@ -114,7 +114,10 @@ public class MemberController {
         HttpSession session = request.getSession();
         String uid = (String) session.getAttribute("uid");
 
+        // 사용자 권한 'N' 처리 + manage 삭제
         memberService.deleteMember(uid);
+        // 권한자가 모두 탈퇴한 행사 삭제
+//        memberService.deleteEventByUid
 
         return ResponseEntity.ok().body(uid);
     }

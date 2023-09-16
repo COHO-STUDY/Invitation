@@ -20,4 +20,6 @@ public interface EventMapper {
     void updateEvent(Event event);
     void deleteEvent(String eid);
     void deleteAuthority(@Param("eid") String eid, @Param("muid") String muid);
+    void deleteManage(String muid);
+    List<String> findEventId();
 }
