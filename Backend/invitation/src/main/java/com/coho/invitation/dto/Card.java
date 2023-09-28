@@ -10,6 +10,8 @@ public class Card {
     private String chost;
     private String adHost;
     private byte[] imgData;
+    private String address;
+    private String sequence;
 
     public String getCid() {
         return cid;
@@ -81,5 +83,21 @@ public class Card {
 
     public void setImgData(byte[] imgData) {
         this.imgData = imgData;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(String sequence) {
+        this.sequence = sequence;
     }
 }

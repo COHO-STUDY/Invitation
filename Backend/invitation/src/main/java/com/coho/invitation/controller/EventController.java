@@ -26,14 +26,14 @@ public class EventController {
     }
 
     /* 로그인한 사용자의 전체 행사 목록 가져오기 */
-    @GetMapping("")
-    public ResponseEntity<List<Event>> getEvents(){
-        String uid = "K2979874325";
-
-        List<Event> eventList = eventService.getEventList(uid);
-
-        return ResponseEntity.ok().body(eventList);
-    }
+//    @GetMapping("")
+//    public ResponseEntity<List<Event>> getEvents(){
+//        String uid = "K2979874325";
+//
+//        List<Event> eventList = eventService.getEventList(uid);
+//
+//        return ResponseEntity.ok().body(eventList);
+//    }
 
     /* 로그인한 사용자의 진행중인 행사 목록 가져오기 */
     @GetMapping("/progressing")
@@ -116,7 +116,10 @@ public class EventController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         Event event = new Event();
         event.setEid(eid);
+        System.out.println(params.get("type"));
         event.setEtype(params.get("type").asText());
+        System.out.println(event.getEtype());
+        System.out.println(params.get("datetime"));
         event.setEdate(LocalDateTime.parse(params.get("datetime").asText()),formatter);
         event.setLocation(params.get("location").asText());
         event.setEhost(params.get("host").toString());

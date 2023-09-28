@@ -9,14 +9,14 @@
         where eid = #{eid};
     </select>
 
-    <insert id="addCardImage" parameterType="Card">
-        insert into card(cid,ctype,eid,imgData)
-        values(#{cid}, 'I', #{eid}, #{imgData});
-    </insert>
+<!--    <insert id="addCardImage" parameterType="Card">-->
+<!--        insert into card(cid,ctype,eid,imgData)-->
+<!--        values(#{cid}, 'I', #{eid}, #{imgData});-->
+<!--    </insert>-->
 
     <insert id="addCardTemplate" parameterType="Card">
-        insert into card (cid,ctype,eid,greeting,letter,bankAccount,chost,adHost)
-        values(#{cid}, 'T', #{eid}, #{greeting}, #{letter}, #{bankAccount}, #{chost}, #{adHost});
+        insert into card (cid,ctype,eid,greeting,letter,bankAccount,chost,adHost,address,sequence)
+        values(#{cid}, 'T', #{eid}, #{greeting}, #{letter}, #{bankAccount}, #{chost}, #{adHost},#{address},#{sequence});
     </insert>
 
     <update id="updateCard" parameterType="Card">
@@ -26,7 +26,9 @@
             letter=#{letter},
             bankAccount=#{bankAccount},
             chost=#{chost},
-            adHost = #{adHost}
+            adHost = #{adHost},
+            address = #{address},
+            sequence = #{sequence}
         where cid=#{cid};
     </update>
 

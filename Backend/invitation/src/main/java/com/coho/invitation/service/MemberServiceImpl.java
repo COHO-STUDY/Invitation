@@ -42,8 +42,8 @@ public class MemberServiceImpl implements MemberService{
                         .path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id",KAKAO_API_KEY)
-//                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")                // 백
-                        .queryParam("redirect_uri", "http://localhost:3000/oauth/kakao/callback")   // 프론트
+                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")                // 백
+//                        .queryParam("redirect_uri", "http://localhost:3000/oauth/kakao/callback")   // 프론트
                         .queryParam("code",code)
                         .build())
                 .retrieve().bodyToMono(JsonNode.class).block();

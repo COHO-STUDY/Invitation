@@ -23,9 +23,9 @@ public class CardServiceImpl implements CardService{
         return Optional.ofNullable(cardMapper.getCard(eid));
     }
 
-    public void addCardImage(Card card){
-        cardMapper.addCardImage(card);
-    }
+//    public void addCardImage(Card card){
+//        cardMapper.addCardImage(card);
+//    }
 
     public void addCardTemplate(Card card){
         cardMapper.addCardTemplate(card);
