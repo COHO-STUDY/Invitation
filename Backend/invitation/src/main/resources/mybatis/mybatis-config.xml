@@ -2,10 +2,10 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <mappers>
-        <mapper resource="MemberMapper.xml"/>
-        <mapper resource="EventMapper.xml"/>
-        <mapper resource="CardMapper.xml"/>
-        <mapper resource="ContactMapper.xml"/>
-    </mappers>
+<!--    <mappers>-->
+<!--        <mapper resource="mybatis/mapper/MemberMapper.xml"/>-->
+<!--        <mapper resource="mybatis/mapper/EventMapper.xml"/>-->
+<!--        <mapper resource="mybatis/mapper/CardMapper.xml"/>-->
+<!--        <mapper resource="mybatis/mapper/ContactMapper.xml"/>-->
+<!--    </mappers>-->
 </configuration>
