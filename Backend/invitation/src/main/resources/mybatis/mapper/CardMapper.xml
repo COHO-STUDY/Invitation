@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.coho.invitation.mapper.CardMapper">
+    <select id="getCard" parameterType="String" resultType="Card">
+        select *
+        from card
+        where eid = #{eid};
+    </select>
+
+<!--    <insert id="addCardImage" parameterType="Card">-->
+<!--        insert into card(cid,ctype,eid,imgData)-->
+<!--        values(#{cid}, 'I', #{eid}, #{imgData});-->
+<!--    </insert>-->
+
+    <insert id="addCardTemplate" parameterType="Card">
+        insert into card (cid,ctype,eid,greeting,letter,bankAccount,chost,adHost,address,sequence)
+        values(#{cid}, 'T', #{eid}, #{greeting}, #{letter}, #{bankAccount}, #{chost}, #{adHost},#{address},#{sequence});
+    </insert>
+
+    <update id="updateCard" parameterType="Card">
+        update card
+        set ctype=#{ctype},
+            greeting=#{greeting},
+            letter=#{letter},
+            bankAccount=#{bankAccount},
+            chost=#{chost},
+            adHost = #{adHost},
+            address = #{address},
+            sequence = #{sequence}
+        where cid=#{cid};
+    </update>
+
+    <delete id="deleteCard" parameterType="String">
+        delete from card where cid = #{cid};
+    </delete>
+</mapper>

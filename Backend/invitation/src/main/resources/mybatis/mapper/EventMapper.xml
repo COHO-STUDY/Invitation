@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.coho.invitation.mapper.EventMapper">
+
+    <select id="getEventList" parameterType="String" resultType="hashmap">
+        select *
+        from event
+        where eid in (select M.eid
+                      from manage M
+                      where M.muid=#{uid});
+    </select>
+
+    <!-- 행사날짜로 order by -->
+    <select id="getEventsProgressing" parameterType="String" resultType="hashmap">
+        select *
+        from event
+        where eid in (select M.eid
+                      from manage M
+                      where M.muid=#{uid})
+          and edate &gt; now()
+        order by edate asc;
+    </select>
+
+    <select id="getEventsDone" parameterType="String" resultType="hashmap">
+        select *
+        from event
+        where eid in (select M.eid
+                      from manage M
+                      where M.muid=#{uid}) 
+          and edate &lt;= now()
+        order by edate asc;
+    </select>
+
+    <select id="getEvent" parameterType="String" resultType="Event">
+        select *
+        from event
+        where eid = #{eid};
+    </select>
+
+    <select id="checkAuthority" parameterType="String" resultType="String">
+        select muid
+        from manage
+        where eid=#{eid};
+    </select>
+
+    <insert id="insertEvent" parameterType="Event">
+        insert into event
+        values(#{eid},#{etype},#{edate},#{location},#{ehost});
+    </insert>
+
+    <insert id="insertManage" parameterType="Map">
+        insert into manage
+        values (NOW(),#{muid}, #{eid});
+    </insert>
+
+    <update id="updateEvent" parameterType="Event">
+        update event
+        set etype=#{etype},
+            edate = str_to_date(#{edate},'%Y-%m-%d %H:%i:%s'),
+            location=#{location},
+            ehost=#{ehost}
+        where eid=#{eid};
+    </update>
+
+    <delete id="deleteEvent" parameterType="String">
+        delete from event where eid=#{eid};
+    </delete>
+
+    <delete id="deleteAuthority" parameterType="Map">
+        delete from manage where eid=#{eid} and muid=#{muid};
+    </delete>
+
+    <delete id="deleteManage" parameterType="String">
+        delete from manage where muid=#{muid};
+    </delete>
+
+    <select id="findEventId" resultType="HashMap">
+        select eid
+        from event
+        where eid not in (select distinct m.eid from manage m);
+    </select>
+
+</mapper>
