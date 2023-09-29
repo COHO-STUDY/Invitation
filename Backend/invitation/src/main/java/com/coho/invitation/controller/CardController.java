@@ -5,6 +5,9 @@ import com.coho.invitation.dto.Event;
 import com.coho.invitation.service.CardService;
 import com.coho.invitation.service.EventService;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Tag(name="3) Card API",description = "초대장(청첩장,초대장) API")
 @RestController
 @RequestMapping("/api/cards")
 @CrossOrigin(origins = "*")
@@ -27,6 +31,8 @@ public class CardController {
     }
 
     /* 카드 정보 조회 */
+    @Operation(summary = "특정 행사의 초대장(카드) 조회", description = "파라미터로 받은 event id의 초대장 카드 정보를 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @GetMapping("/{eid}")
     public ResponseEntity<?> getCard(@PathVariable("eid") String eid){
         Map<String,Object> map = new HashMap<>();
@@ -63,6 +69,8 @@ public class CardController {
 //    }
 
     /* 초대장 템플릿으로 추가 */
+    @Operation(summary = "특정 행사의 초대장 카드 추가", description = "파라미터로 받은 event id의 카드 정보를 사용하여 초대장을 저장하고 정보 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PostMapping("/templates/{eid}")
     public ResponseEntity<?> addCard(@PathVariable("eid") String eid, @RequestBody JsonNode params){
         Card card = new Card();
@@ -92,6 +100,8 @@ public class CardController {
     }
 
     /* 초대장 수정하기 */
+    @Operation(summary = "특정 초대장 카드의 정보 수정", description = "파라미터로 받은 card id와 초대장 카드 정보를 통해 수정하고 card id 반환")
+    @Parameter(name="str", description = "선택한 초대장의 card id를 전송")
     @PutMapping("/{cid}")
     public ResponseEntity<?> updateCard(@PathVariable("cid") String cid, @RequestBody JsonNode params){
         Card card = new Card();
@@ -110,14 +120,16 @@ public class CardController {
 
         cardService.updateCard(card);
 
-        return ResponseEntity.ok().body("성공");
+        return ResponseEntity.ok().body(cid);
     }
 
+    @Operation(summary = "특정 초대장 카드 삭제", description = "파라미터로 받은 card id의 초대장 카드 삭제 후 card id 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @DeleteMapping("/{cid}")
     public ResponseEntity<?> deleteCard(@PathVariable("cid") String cid){
 
         cardService.deleteCard(cid);
 
-        return ResponseEntity.ok().body("성공");
+        return ResponseEntity.ok().body(cid);
     }
 }

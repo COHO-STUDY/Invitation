@@ -3,6 +3,9 @@ package com.coho.invitation.controller;
 import com.coho.invitation.dto.Contact;
 import com.coho.invitation.service.ContactService;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name="4) Contact API",description = "연락처 목록 API")
 @RestController
 @RequestMapping("/api/contacts")
 @CrossOrigin(origins = "*")
@@ -26,6 +30,9 @@ public class ContactController {
     }
 
     /* 연락처 조회 */
+    @Operation(summary = "로그인한 사용자의 특정 행사의 연락처 목록 조회", description = "파라미터로 받은 event id의 연락처 목록을 조회하여 반환")
+    @Parameter(name="event id", description = "선택한 행사의 event id를 전송")
+    @Parameter(name = "condition", description = "검색 조건을 전송")
     @GetMapping("/{eid}")
     public ResponseEntity<List<Contact>> getContactList(@PathVariable("eid")String eid, @RequestParam("condition")String con){
         HttpSession session = request.getSession();
@@ -52,6 +59,8 @@ public class ContactController {
 //    }
 
     /* 연락처 직접 추가 */
+    @Operation(summary = "연락처 직접 추가", description = "파라미터로 받은 event id와 연락처 정보를 가지고 연락처를 저장하고 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PostMapping("/{eid}")
     public ResponseEntity<Contact> addContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -88,6 +97,8 @@ public class ContactController {
 //    }
 
     /* 초대장 전송 여부 체크 */
+    @Operation(summary = "특정 연락처의 초대장 전송 여부 조회", description = "파라미터로 받은 event id와 contact를 받아 전송여부를 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PutMapping("/{eid}/status")
     public ResponseEntity<?> checkIsSent(@PathVariable("eid")String eid, @RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -101,6 +112,8 @@ public class ContactController {
     }
 
     /* 연락처 정보 수정 */
+    @Operation(summary = "특정 연락처의 정보 수정", description = "파라미터로 받은 event id와 연락처 정보를 수정하고 연락처 정보를 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PutMapping("/{eid}")
     public ResponseEntity<Contact> updateContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -120,6 +133,8 @@ public class ContactController {
     }
 
     /* 연락처 삭제 */
+    @Operation(summary = "특정 연락처 삭제", description = "파라미터로 받은 event id와 연락처를 삭제하고 삭제한 연락처 id 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @DeleteMapping("/{eid}")
     public ResponseEntity<String> deleteContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
         HttpSession session = request.getSession();

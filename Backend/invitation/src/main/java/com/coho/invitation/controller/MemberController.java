@@ -3,6 +3,8 @@ package com.coho.invitation.controller;
 import com.coho.invitation.dto.Member;
 import com.coho.invitation.service.MemberService;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Tag(name="1) Member API",description = "사용자 API")
 @RestController
 @RequestMapping("/api/members")
 @CrossOrigin(origins = "*")
@@ -37,6 +40,7 @@ public class MemberController {
     }
 
     /* 카카오 로그인 - 웹 */
+    @Operation(summary = "웹 카카오 로그인", description = "파라미터로 받은 인가코드로 로그인하고 사용자의 정보 반환")
     @PostMapping("/kakao/web")
     public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -64,6 +68,7 @@ public class MemberController {
     }
 
     /* 카카오 로그인 - 안드로이드 */
+    @Operation(summary = "안드로이드 카카오 로그인", description = "파라미터로 받은 사용자id와 token을 저장")
     @PostMapping("/kakao/android/")
     public ResponseEntity<Member> kakaoLoginAndroid(@RequestBody JsonNode params){
         Member member;
@@ -94,6 +99,7 @@ public class MemberController {
 //    }
 
     /* 회원 정보 수정 */
+
     @PutMapping("")
     public ResponseEntity<String> updateUserInfo(@RequestBody JsonNode params){
         HttpSession session = request.getSession();

@@ -3,8 +3,10 @@ package com.coho.invitation.controller;
 import com.coho.invitation.dto.Event;
 import com.coho.invitation.service.EventService;
 import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name="2) Event API",description = "행사 API")
 @RestController
 @RequestMapping("/api/events")
 @CrossOrigin(origins = "*")
@@ -36,6 +39,7 @@ public class EventController {
 //    }
 
     /* 로그인한 사용자의 진행중인 행사 목록 가져오기 */
+    @Operation(summary = "진행중인 행사 목록 조회", description = "현재 진행 중인 행사 목록을 반환")
     @GetMapping("/progressing")
     public ResponseEntity<List<Event>> getEventsProgressing(){
         String uid = "K2979874325";
@@ -46,6 +50,7 @@ public class EventController {
     }
 
     /* 로그인한 사용자의 진행 완료된 행사 목록 가져오기 */
+    @Operation(summary = "진행 완료된 행사 목록 조회", description = "현재 완료된 행사 목록을 반환")
     @GetMapping("/done")
     public ResponseEntity<List<Event>> getEventsDone(){
         String uid = "K2979874325";
@@ -56,6 +61,8 @@ public class EventController {
     }
 
     /* 선택한 행사 조회 */
+    @Operation(summary = "특정 행사 조회", description = "파라미터로 받은 event id의 행사 정보를 반환")
+    @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @GetMapping("/{eid}")
     public ResponseEntity<Event> getEvent(@PathVariable("eid") String eid){
         String uid = "K2979874325";
@@ -71,6 +78,7 @@ public class EventController {
     }
 
     /* 행사 추가하기 */
+    @Operation(summary = "행사 추가", description = "파라미터로 받은 행사 정보를 저장하고 event id를 반환")
     @PostMapping("")
     public String addEvent(@RequestBody JsonNode params){
         String uid = "K2979874325";
@@ -110,6 +118,8 @@ public class EventController {
     }
 
     /* 행사 정보 수정하기 */
+    @Operation(summary = "행사 수정", description = "파라미터로 받은 event id와 수정할 행사 정보를 사용하여 행사 정보를 수정하고 event id 반환")
+    @Parameter(name="str", description = "수정할 행사의 event id 전송")
     @PutMapping("/{eid}")
     public String updateEvent(@PathVariable("eid") String eid, @RequestBody JsonNode params){
         String uid = "K2979874325";
@@ -135,6 +145,8 @@ public class EventController {
     }
 
     /* 행사 삭제하기 */
+    @Operation(summary = "행사 삭제", description = "event id를 받아 행사를 삭제하고 event id 반환")
+    @Parameter(name="str", description = "삭제할 행사의 event id를 전송")
     @DeleteMapping("/{eid}")
     public String deleteEvent(@PathVariable("eid") String eid){
         String uid = "K2979874325";
