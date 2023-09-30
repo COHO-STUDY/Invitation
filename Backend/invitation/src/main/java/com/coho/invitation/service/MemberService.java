@@ -1,12 +1,13 @@
 package com.coho.invitation.service;
 
+import com.coho.invitation.dto.KakaoOAuthToken;
 import com.coho.invitation.dto.Member;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberService {
-    String[] getKakaoAccessToken(String code);
+    KakaoOAuthToken getKakaoAccessToken(String code);
     Member getUserInfo(String accessToken);
     Optional<Member> getMember(String uid);
     List<Member> getMemberList();

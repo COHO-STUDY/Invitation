@@ -11,6 +11,7 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
   config-location: classpath:mybatis/mybatis-config.xml
   type-aliases-package: com.coho.invitation
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json

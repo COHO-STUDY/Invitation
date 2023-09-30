@@ -1,5 +1,6 @@
 package com.coho.invitation.controller;
 
+import com.coho.invitation.dto.KakaoOAuthToken;
 import com.coho.invitation.dto.Member;
 import com.coho.invitation.service.MemberService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Tag(name="1) Member API",description = "사용자 API")
@@ -49,20 +51,24 @@ public class MemberController {
         String code = params.get("code").asText();
 
         // 토큰 발급 요청
-        String[] tokens = memberService.getKakaoAccessToken(code);
+        KakaoOAuthToken authToken = memberService.getKakaoAccessToken(code);
 
         // 사용자 정보 가져오기
-        Member member = memberService.getUserInfo(tokens[0]);
+        Member member = memberService.getUserInfo(authToken.getAccess_token());
 
         // 회원 정보 확인하여 처음 로그인한 회원이면 회원가입
-        if(memberService.getMember(member.getUid()).isEmpty())
+        Optional<Member> savedMember = memberService.getMember(member.getUid());
+        if(savedMember.isEmpty())
             memberService.insertMember(member);
+        // 이미 회원가입한 사용자이면 DB의 사용자 정보 저장
+        else
+            member = savedMember.get();
 
         // session에 uid 추가
         session.setAttribute("uid",member.getUid());
         // access_token, refresh_token도 session에 저장
-        session.setAttribute("access_token",tokens[0]);
-        session.setAttribute("refresh_token",tokens[1]);
+        session.setAttribute("access_token",authToken.getAccess_token());
+        session.setAttribute("refresh_token",authToken.getRefresh_token());
 
         return ResponseEntity.ok().headers(headers).body(member);
     }
