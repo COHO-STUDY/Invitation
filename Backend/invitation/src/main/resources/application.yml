@@ -6,6 +6,9 @@ spring:
     password: ${DB_PASSWORD}
   profiles:
     include: KEY
+  security:
+    user:
+      password: ${TEMP_PASSWORD}
 
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml

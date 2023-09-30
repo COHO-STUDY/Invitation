@@ -45,7 +45,7 @@ public class MemberController {
     @Operation(summary = "웹 카카오 로그인", description = "파라미터로 받은 인가코드로 로그인하고 사용자의 정보 반환")
     @PostMapping("/kakao/web")
     public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
-        HttpSession session = request.getSession();
+//        HttpSession session = request.getSession();
         HttpHeaders headers = new HttpHeaders();
 
         String code = params.get("code").asText();
@@ -64,11 +64,13 @@ public class MemberController {
         else
             member = savedMember.get();
 
-        // session에 uid 추가
-        session.setAttribute("uid",member.getUid());
-        // access_token, refresh_token도 session에 저장
-        session.setAttribute("access_token",authToken.getAccess_token());
-        session.setAttribute("refresh_token",authToken.getRefresh_token());
+        System.out.println(member.getUid()+" "+authToken.getAccess_token());
+
+//        // session에 uid 추가
+//        session.setAttribute("uid",member.getUid());
+//        // access_token, refresh_token도 session에 저장
+//        session.setAttribute("access_token",authToken.getAccess_token());
+//        session.setAttribute("refresh_token",authToken.getRefresh_token());
 
         return ResponseEntity.ok().headers(headers).body(member);
     }
