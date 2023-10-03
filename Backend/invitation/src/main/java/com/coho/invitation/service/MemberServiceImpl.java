@@ -1,5 +1,6 @@
 package com.coho.invitation.service;
 
+import com.coho.invitation.dto.KakaoOAuthToken;
 import com.coho.invitation.dto.Member;
 import com.coho.invitation.mapper.EventMapper;
 import com.coho.invitation.mapper.MemberMapper;
@@ -21,6 +22,9 @@ public class MemberServiceImpl implements MemberService{
     private static final String KAKAO_API_BASE_URL = "https://kapi.kakao.com";
     @Value("${KAKAO_API_KEY}")
     private String KAKAO_API_KEY;
+    @Value("${REDIRECT_URI}")
+    private String REDIRECT_URI;
+
 
     public MemberServiceImpl(MemberMapper memberMapper, EventMapper eventMapper) {
         this.memberMapper = memberMapper;
@@ -29,8 +33,8 @@ public class MemberServiceImpl implements MemberService{
 
     /* 카카오 토큰 받기 */
     @Override
-    public String[] getKakaoAccessToken(String code) {
-        String[] tokens = {"",""};
+    public KakaoOAuthToken getKakaoAccessToken(String code) {
+        KakaoOAuthToken authToken = new KakaoOAuthToken();
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(KAKAO_LOGIN_API_BASE_URL)
@@ -42,16 +46,18 @@ public class MemberServiceImpl implements MemberService{
                         .path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id",KAKAO_API_KEY)
-                        .queryParam("redirect_uri", "http://localhost:8080/api/members/kakao")                // 백
-//                        .queryParam("redirect_uri", "http://localhost:3000/oauth/kakao/callback")   // 프론트
+                        .queryParam("redirect_uri", REDIRECT_URI)
                         .queryParam("code",code)
                         .build())
                 .retrieve().bodyToMono(JsonNode.class).block();
 
-        tokens[0] = response.get("access_token").asText();
-        tokens[1] = response.get("refresh_token").asText();
+        authToken.setToken_type(response.get("token_type").asText());
+        authToken.setAccess_token(response.get("access_token").asText());
+        authToken.setExpires_in(response.get("expires_in").asInt());
+        authToken.setRefresh_token(response.get("refresh_token").asText());
+        authToken.setRefresh_token_expires_in(response.get("refresh_token_expires_in").asInt());
 
-        return tokens;
+        return authToken;
     }
 
     /* 사용자 정보 가져오기 */

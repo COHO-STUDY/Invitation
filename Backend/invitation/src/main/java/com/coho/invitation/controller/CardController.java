@@ -2,6 +2,7 @@ package com.coho.invitation.controller;
 
 import com.coho.invitation.dto.Card;
 import com.coho.invitation.dto.Event;
+import com.coho.invitation.security.UserAuthorize;
 import com.coho.invitation.service.CardService;
 import com.coho.invitation.service.EventService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Tag(name="3) Card API",description = "초대장(청첩장,초대장) API")
+//@UserAuthorize
 @RestController
 @RequestMapping("/api/cards")
 @CrossOrigin(origins = "*")
