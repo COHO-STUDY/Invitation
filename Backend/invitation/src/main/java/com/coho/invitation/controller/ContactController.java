@@ -1,6 +1,7 @@
 package com.coho.invitation.controller;
 
 import com.coho.invitation.dto.Contact;
+import com.coho.invitation.security.UserAuthorize;
 import com.coho.invitation.service.ContactService;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Tag(name="4) Contact API",description = "연락처 목록 API")
+//@UserAuthorize
 @RestController
 @RequestMapping("/api/contacts")
 @CrossOrigin(origins = "*")

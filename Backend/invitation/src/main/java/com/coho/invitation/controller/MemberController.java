@@ -2,6 +2,8 @@ package com.coho.invitation.controller;
 
 import com.coho.invitation.dto.KakaoOAuthToken;
 import com.coho.invitation.dto.Member;
+import com.coho.invitation.security.TokenProvider;
+import com.coho.invitation.security.UserAuthorize;
 import com.coho.invitation.service.MemberService;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Tag(name="1) Member API",description = "사용자 API")
@@ -25,12 +26,16 @@ public class MemberController {
     private HttpServletRequest request;
     @Autowired
     private final MemberService memberService;
+    @Autowired
+    private final TokenProvider tokenProvider;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, TokenProvider tokenProvider) {
         this.memberService = memberService;
+        this.tokenProvider = tokenProvider;
     }
 
     /* 로그인한 사용자의 정보 조회 */
+    @UserAuthorize
     @GetMapping("")
     public ResponseEntity<Member> getMember(){
         HttpSession session = request.getSession();
@@ -45,12 +50,11 @@ public class MemberController {
     @Operation(summary = "웹 카카오 로그인", description = "파라미터로 받은 인가코드로 로그인하고 사용자의 정보 반환")
     @PostMapping("/kakao/web")
     public ResponseEntity<Member> kakaoCallback(@RequestBody JsonNode params){
-//        HttpSession session = request.getSession();
         HttpHeaders headers = new HttpHeaders();
 
         String code = params.get("code").asText();
 
-        // 토큰 발급 요청
+        // 카카오 토큰 발급 요청
         KakaoOAuthToken authToken = memberService.getKakaoAccessToken(code);
 
         // 사용자 정보 가져오기
@@ -64,13 +68,11 @@ public class MemberController {
         else
             member = savedMember.get();
 
-        System.out.println(member.getUid()+" "+authToken.getAccess_token());
+        System.out.println(member.getUid() +" "+member.getName());
 
-//        // session에 uid 추가
-//        session.setAttribute("uid",member.getUid());
-//        // access_token, refresh_token도 session에 저장
-//        session.setAttribute("access_token",authToken.getAccess_token());
-//        session.setAttribute("refresh_token",authToken.getRefresh_token());
+        // 서버 토큰 발급
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
+        headers.add("Authorization","Bearer "+jwt);
 
         return ResponseEntity.ok().headers(headers).body(member);
     }
@@ -79,6 +81,7 @@ public class MemberController {
     @Operation(summary = "안드로이드 카카오 로그인", description = "파라미터로 받은 사용자id와 token을 저장")
     @PostMapping("/kakao/android/")
     public ResponseEntity<Member> kakaoLoginAndroid(@RequestBody JsonNode params){
+        HttpHeaders headers = new HttpHeaders();
         Member member;
 
         String uid = "K" + params.get("userId").asText();
@@ -96,7 +99,14 @@ public class MemberController {
         else
             member = savedMember.get();
 
-        return ResponseEntity.ok().body(member);
+        // 서버 토큰 발급
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"USER"));
+
+        System.out.println(jwt);
+
+        headers.add("Authorization","Bearer "+jwt);
+
+        return ResponseEntity.ok().headers(headers).body(member);
     }
 
     /* 카카오 이메일 정보 추가로 가져오기 */
@@ -107,7 +117,7 @@ public class MemberController {
 //    }
 
     /* 회원 정보 수정 */
-
+//    @UserAuthorize
     @PutMapping("")
     public ResponseEntity<String> updateUserInfo(@RequestBody JsonNode params){
         HttpSession session = request.getSession();
@@ -123,6 +133,7 @@ public class MemberController {
     }
 
     /* 회원 탈퇴 */
+//    @UserAuthorize
     @DeleteMapping("")
     public ResponseEntity<String> deleteUser(){
         HttpSession session = request.getSession();
