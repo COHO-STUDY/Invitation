@@ -26,7 +26,8 @@ public class SecurityConfig {
                     auth    // requestMatcher의 인자로 전달된 url은 모두에게 허용
                             .requestMatchers("/","/swagger-ui/**","/api-docs/**").permitAll()  // Swagger 설정(/swagger-ui/** : url, /api-docs/** : 리소스)
                             .requestMatchers("/api/members/kakao/web","/api/members/kakao/android/").permitAll()    // 로그인(회원가입)
-                            .anyRequest().authenticated()   // 그 외 모든 요청 인증이 필요함
+                            .anyRequest().hasAuthority("USER")      // USER 권한을 가진 사용자 인증이 필요
+//                            .anyRequest().authenticated()   // 그 외 모든 요청 인증이 필요함(로그인한 사용자면 OK)
                 )
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -4,6 +4,7 @@ import com.coho.invitation.dto.Card;
 import com.coho.invitation.mapper.CardMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,10 @@ public class CardServiceImpl implements CardService{
 
     public void addCardTemplate(Card card){
         cardMapper.addCardTemplate(card);
+    }
+
+    public List<String> checkCardAuthority(String cid){
+        return cardMapper.checkCardAuthority(cid);
     }
 
     public void updateCard(Card card){

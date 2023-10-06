@@ -8,11 +8,11 @@ import com.coho.invitation.service.MemberService;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -22,8 +22,6 @@ import java.util.Optional;
 @RequestMapping("/api/members")
 @CrossOrigin(origins = "*")
 public class MemberController {
-    @Autowired
-    private HttpServletRequest request;
     @Autowired
     private final MemberService memberService;
     @Autowired
@@ -37,9 +35,8 @@ public class MemberController {
     /* 로그인한 사용자의 정보 조회 */
     @UserAuthorize
     @GetMapping("")
-    public ResponseEntity<Member> getMember(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+    public ResponseEntity<Member> getMember(@AuthenticationPrincipal User user){
+        String uid = user.getUsername();
 
         Member member = memberService.getMember(uid).get();
 
@@ -78,7 +75,7 @@ public class MemberController {
         member.setRefreshToken("");
 
         // 서버 토큰 발급
-        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"USER"));
         headers.add("Authorization","Bearer "+jwt);
 
         return ResponseEntity.ok().headers(headers).body(member);
@@ -113,25 +110,18 @@ public class MemberController {
         member.setRefreshToken("");
 
         // 서버 토큰 발급
-        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"USER"));
         headers.add("Authorization","Bearer "+jwt);
 
         return ResponseEntity.ok().headers(headers).body(member);
     }
 
-    /* 카카오 이메일 정보 추가로 가져오기 */
-//    @GetMapping("/kakao/email")
-//    public String getKakaoEmail(@RequestParam String code){
-//
-//        return "";
-//    }
-
     /* 회원 정보 수정 */
-//    @UserAuthorize
+    @UserAuthorize
     @PutMapping("")
-    public ResponseEntity<String> updateUserInfo(@RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+    public ResponseEntity<String> updateUserInfo(@AuthenticationPrincipal User user, @RequestBody JsonNode params){
+        String uid = user.getUsername();
+
         Member member = new Member();
         member.setUid(uid);
         member.setName(params.get("name").asText());
@@ -143,11 +133,10 @@ public class MemberController {
     }
 
     /* 회원 탈퇴 */
-//    @UserAuthorize
+    @UserAuthorize
     @DeleteMapping("")
-    public ResponseEntity<String> deleteUser(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal User user){
+        String uid = user.getUsername();
 
         // 사용자 권한 'N' 처리 + manage 삭제
         memberService.deleteMember(uid);

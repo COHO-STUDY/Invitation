@@ -19,6 +19,14 @@
         values(#{cid}, 'T', #{eid}, #{greeting}, #{letter}, #{bankAccount}, #{chost}, #{adHost},#{address},#{sequence});
     </insert>
 
+    <select id="checkCardAuthority" parameterType="String" resultType="String">
+        select M.muid
+        from manage M
+        where M.eid = (select C.eid
+                       from card C
+                       where cid=#{cid});
+    </select>
+
     <update id="updateCard" parameterType="Card">
         update card
         set ctype=#{ctype},
