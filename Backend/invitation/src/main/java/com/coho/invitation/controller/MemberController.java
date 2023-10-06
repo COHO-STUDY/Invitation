@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +37,7 @@ public class MemberController {
     @UserAuthorize
     @GetMapping("")
     public ResponseEntity<Member> getMember(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
 
         Member member = memberService.getMember(uid).get();
 
@@ -78,7 +76,7 @@ public class MemberController {
         member.setRefreshToken("");
 
         // 서버 토큰 발급
-        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"USER"));
         headers.add("Authorization","Bearer "+jwt);
 
         return ResponseEntity.ok().headers(headers).body(member);
@@ -113,25 +111,18 @@ public class MemberController {
         member.setRefreshToken("");
 
         // 서버 토큰 발급
-        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"USER"));
         headers.add("Authorization","Bearer "+jwt);
 
         return ResponseEntity.ok().headers(headers).body(member);
     }
 
-    /* 카카오 이메일 정보 추가로 가져오기 */
-//    @GetMapping("/kakao/email")
-//    public String getKakaoEmail(@RequestParam String code){
-//
-//        return "";
-//    }
-
     /* 회원 정보 수정 */
-//    @UserAuthorize
+    @UserAuthorize
     @PutMapping("")
     public ResponseEntity<String> updateUserInfo(@RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
+
         Member member = new Member();
         member.setUid(uid);
         member.setName(params.get("name").asText());
@@ -143,11 +134,10 @@ public class MemberController {
     }
 
     /* 회원 탈퇴 */
-//    @UserAuthorize
+    @UserAuthorize
     @DeleteMapping("")
     public ResponseEntity<String> deleteUser(){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
 
         // 사용자 권한 'N' 처리 + manage 삭제
         memberService.deleteMember(uid);

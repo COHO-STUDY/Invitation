@@ -8,7 +8,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,14 +32,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 토큰에서 사용자 정보 추출
         String token = parseBearerToken(request);
         User user = parseMemberSpec(token);
+        // 유효성 검사 후 유효한 경우, Authenticaiton 객체를 생성하여 Spring Security 컨텍스트에 저장
         AbstractAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(user, token,user.getAuthorities());
         authenticated.setDetails(new WebAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
 
-        request.setAttribute("user",user);
-        request.setAttribute("uid",user.getUsername());
+        request.setAttribute("uid",authenticated.getName());
 
         filterChain.doFilter(request,response);
     }
@@ -55,13 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private User parseMemberSpec(String token) {
-        System.out.println(token);
 
         String[] tokenSplit = Optional.ofNullable(token)
                 .filter(subject -> subject.length() >= 10)
                 .map(tokenProvider::validateTokenAndGetSubject)
                 .orElse("anonymous:")
-//                .orElse("anonymous:ROLE_ANONYMOUS")     // filter와 map을 통과하지 못했을 때
                 .split(":");
 
         List<GrantedAuthority> authorities = new ArrayList<>();

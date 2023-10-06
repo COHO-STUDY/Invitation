@@ -6,13 +6,10 @@ import com.coho.invitation.service.EventService;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -50,10 +47,7 @@ public class EventController {
     @Operation(summary = "진행중인 행사 목록 조회", description = "현재 진행 중인 행사 목록을 반환")
     @GetMapping("/progressing")
     public ResponseEntity<List<Event>> getEventsProgressing(){
-        System.out.println("진행중인 행사 목록 조회 가능");
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
-
 
         List<Event> eventList = eventService.getEventsProgressing(uid);
 
@@ -64,7 +58,6 @@ public class EventController {
     @Operation(summary = "진행 완료된 행사 목록 조회", description = "현재 완료된 행사 목록을 반환")
     @GetMapping("/done")
     public ResponseEntity<List<Event>> getEventsDone(){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
 
         List<Event> eventList = eventService.getEventsDone(uid);
@@ -77,7 +70,6 @@ public class EventController {
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @GetMapping("/{eid}")
     public ResponseEntity<Event> getEvent(@PathVariable("eid") String eid){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
 
         /* 권한이 없다면 조회 불가능 - spring interceptor로..? */
@@ -94,12 +86,9 @@ public class EventController {
     @Operation(summary = "행사 추가", description = "파라미터로 받은 행사 정보를 저장하고 event id를 반환")
     @PostMapping("")
     public ResponseEntity<Event> addEvent(@RequestBody JsonNode params){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
         Event event = new Event();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
-        System.out.println(uid);
 
         // 실제 event 값 설정
         event.setEid(UUID.randomUUID().toString());
@@ -118,7 +107,6 @@ public class EventController {
     * 행사 권한자를 어떻게 호출할 것인가(백 or 프론트)*/
     @PostMapping("/auth/{eid}")
     public String addAuthority(@PathVariable("eid") String eid, @RequestBody JsonNode params){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
         String newUid = params.get("uid").asText();
 
@@ -137,7 +125,6 @@ public class EventController {
     @Parameter(name="str", description = "수정할 행사의 event id 전송")
     @PutMapping("/{eid}")
     public String updateEvent(@PathVariable("eid") String eid, @RequestBody JsonNode params){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         Event event = new Event();
@@ -165,7 +152,6 @@ public class EventController {
     @Parameter(name="str", description = "삭제할 행사의 event id를 전송")
     @DeleteMapping("/{eid}")
     public String deleteEvent(@PathVariable("eid") String eid){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
 
         /* 권한이 있을 경우에만 삭제 가능 - 행사 페이지 안에서 삭제시 필요X */
@@ -181,7 +167,6 @@ public class EventController {
     /* 행사의 권한 삭제 - 자기 자신만 가능 */
     @DeleteMapping("/auth/{eid}")
     public String deleteAuthority(@PathVariable("eid") String eid){
-        User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
 
         /* 현재 로그인한 사용자의 행사 권한 삭제 */

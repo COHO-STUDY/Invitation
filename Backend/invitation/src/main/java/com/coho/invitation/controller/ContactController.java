@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Tag(name="4) Contact API",description = "연락처 목록 API")
-//@UserAuthorize
+@UserAuthorize
 @RestController
 @RequestMapping("/api/contacts")
 @CrossOrigin(origins = "*")
@@ -37,8 +36,7 @@ public class ContactController {
     @Parameter(name = "condition", description = "검색 조건을 전송")
     @GetMapping("/{eid}")
     public ResponseEntity<List<Contact>> getContactList(@PathVariable("eid")String eid, @RequestParam("condition")String con){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
 
         System.out.println(con);
 
@@ -50,8 +48,8 @@ public class ContactController {
     /* 연락처 카카오톡 친구불러오기로 추가 */
 //    @PostMapping("/kakao/{eid}")
 //    public ResponseEntity<String> addContactList(@PathVariable("eid")String eid, @RequestBody List<Contact> contacts){
-//        HttpSession session = request.getSession();
-//        String uid = (String) session.getAttribute("uid");
+//        String uid = (String) request.getAttribute("uid");
+//
 ////        List<Contact> contacts =
 //
 //        // 로직 추가
@@ -65,8 +63,7 @@ public class ContactController {
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PostMapping("/{eid}")
     public ResponseEntity<Contact> addContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
 
         Contact contact = new Contact();
 
@@ -85,8 +82,7 @@ public class ContactController {
     /* 카카오톡 메시지 전송 */
 //    @PostMapping("/kakaoMsg/{eid}")
 //    public ResponseEntity<?> sendKakaoMessages(@PathVariable("eid") String eid, @RequestBody String cid){
-//        HttpSession session = request.getSession();
-//        String uid = (String) session.getAttribute("uid");
+//    String uid = (String) request.getAttribute("uid");
 //
 //        // 카카오톡 메시지 api 호출
 //        // access_token, uuid 배열, template_object를 사용하여 호출
@@ -103,8 +99,8 @@ public class ContactController {
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PutMapping("/{eid}/status")
     public ResponseEntity<?> checkIsSent(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
+
         Boolean isSent = params.get("status").asBoolean();
         String cid = params.get("contactId").asText();
 
@@ -118,8 +114,7 @@ public class ContactController {
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PutMapping("/{eid}")
     public ResponseEntity<Contact> updateContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
 
         Contact contact = new Contact();
 
@@ -139,8 +134,7 @@ public class ContactController {
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @DeleteMapping("/{eid}")
     public ResponseEntity<String> deleteContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        HttpSession session = request.getSession();
-        String uid = (String) session.getAttribute("uid");
+        String uid = (String) request.getAttribute("uid");
 
         String contactId = params.get("contactId").asText();
 
