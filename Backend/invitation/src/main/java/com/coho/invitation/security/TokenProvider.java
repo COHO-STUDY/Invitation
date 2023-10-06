@@ -11,7 +11,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 public class TokenProvider {
@@ -22,7 +21,8 @@ public class TokenProvider {
     public TokenProvider(
             @Value("${secret-key}") String secretKey,
             @Value("${expire-hours}") long expireHours,
-            @Value("${issuer}") String issuer) {
+            @Value("${issuer}") String issuer
+    ) {
         this.secretKey = secretKey;
         this.expireHours = expireHours;
         this.issuer = issuer;
@@ -39,7 +39,9 @@ public class TokenProvider {
                 .compact();     // JWT 토큰 생성
     }
 
-    /* 토큰 정보로 사용자 권한 확인 */
+    /* 토큰 정보로 사용자 권한 확인
+    * -	비밀키를 토대로 createToken()에서 토큰에 담은 subject를 복호화하여 문자열로 반환
+    *  */
     public String validateTokenAndGetSubject(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey.getBytes())

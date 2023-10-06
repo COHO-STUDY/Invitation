@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )   // 세션을 사용하지 않기 때문에 session 생성 정책을 STATELESS로 설정
-                .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)      // JwtAuthenticationFilter를 주입받아서 BasicAuthenticationFilter 앞에 추가
                 .build();
 
     }

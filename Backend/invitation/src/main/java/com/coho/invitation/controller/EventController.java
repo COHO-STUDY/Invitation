@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Tag(name="2) Event API",description = "행사 API")
-//@UserAuthorize
+@UserAuthorize
 @RestController
 @RequestMapping("/api/events")
 @CrossOrigin(origins = "*")
@@ -48,13 +48,11 @@ public class EventController {
 
     /* 로그인한 사용자의 진행중인 행사 목록 가져오기 */
     @Operation(summary = "진행중인 행사 목록 조회", description = "현재 진행 중인 행사 목록을 반환")
-    @UserAuthorize
     @GetMapping("/progressing")
     public ResponseEntity<List<Event>> getEventsProgressing(){
         System.out.println("진행중인 행사 목록 조회 가능");
         User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
-        System.out.println(user.getAuthorities());
 
 
         List<Event> eventList = eventService.getEventsProgressing(uid);
@@ -68,7 +66,6 @@ public class EventController {
     public ResponseEntity<List<Event>> getEventsDone(){
         User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
-        System.out.println(user.getAuthorities());
 
         List<Event> eventList = eventService.getEventsDone(uid);
 
@@ -96,7 +93,7 @@ public class EventController {
     /* 행사 추가하기 */
     @Operation(summary = "행사 추가", description = "파라미터로 받은 행사 정보를 저장하고 event id를 반환")
     @PostMapping("")
-    public String addEvent(@RequestBody JsonNode params){
+    public ResponseEntity<Event> addEvent(@RequestBody JsonNode params){
         User user = (User) request.getAttribute("user");
         String uid = (String) request.getAttribute("uid");
         Event event = new Event();
@@ -114,7 +111,7 @@ public class EventController {
         eventService.insertEvent(event);
         eventService.insertManage(uid,event.getEid());
 
-        return event.getEid();
+        return ResponseEntity.ok().body(event);
     }
 
     /* 행사 권한자 추가하기

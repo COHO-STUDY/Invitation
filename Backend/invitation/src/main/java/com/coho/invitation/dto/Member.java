@@ -5,6 +5,7 @@ public class Member {
     private String name;
     private String email;
     private String auth = "Y";
+    private String refreshToken;
 
     public String getUid() {
         return uid;
@@ -36,5 +37,13 @@ public class Member {
 
     public void setAuth(String auth) {
         this.auth = auth;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
