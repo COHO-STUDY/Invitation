@@ -8,7 +8,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,8 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authenticated.setDetails(new WebAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
 
-        request.setAttribute("uid",authenticated.getName());
-
         filterChain.doFilter(request,response);
     }
 
@@ -58,17 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String[] tokenSplit = Optional.ofNullable(token)
                 .filter(subject -> subject.length() >= 10)
                 .map(tokenProvider::validateTokenAndGetSubject)
-                .orElse("anonymous:")
+                .orElse("anonymous:anonymous")
                 .split(":");
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        if (tokenSplit != null && tokenSplit.length == 2)
-            authorities.add(new SimpleGrantedAuthority(tokenSplit[1]));
-
-        return new User(tokenSplit[0],"", authorities);
-
-//        return new User(tokenSplit[0],"", List.of(new SimpleGrantedAuthority(tokenSplit[1])));
+        return new User(tokenSplit[0],"", List.of(new SimpleGrantedAuthority(tokenSplit[1])));
     }
 
 }

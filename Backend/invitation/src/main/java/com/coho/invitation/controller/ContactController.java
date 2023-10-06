@@ -7,9 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +22,7 @@ import java.util.UUID;
 @RequestMapping("/api/contacts")
 @CrossOrigin(origins = "*")
 public class ContactController {
-    @Autowired
-    private HttpServletRequest request;
+
     @Autowired
     private ContactService contactService;
 
@@ -35,8 +35,8 @@ public class ContactController {
     @Parameter(name="event id", description = "선택한 행사의 event id를 전송")
     @Parameter(name = "condition", description = "검색 조건을 전송")
     @GetMapping("/{eid}")
-    public ResponseEntity<List<Contact>> getContactList(@PathVariable("eid")String eid, @RequestParam("condition")String con){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<List<Contact>> getContactList(@AuthenticationPrincipal User user, @PathVariable("eid")String eid, @RequestParam("condition")String con){
+        String uid = user.getUsername();
 
         System.out.println(con);
 
@@ -62,8 +62,8 @@ public class ContactController {
     @Operation(summary = "연락처 직접 추가", description = "파라미터로 받은 event id와 연락처 정보를 가지고 연락처를 저장하고 반환")
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PostMapping("/{eid}")
-    public ResponseEntity<Contact> addContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<Contact> addContact(@AuthenticationPrincipal User user, @PathVariable("eid")String eid, @RequestBody JsonNode params){
+        String uid = user.getUsername();
 
         Contact contact = new Contact();
 
@@ -98,8 +98,8 @@ public class ContactController {
     @Operation(summary = "특정 연락처의 초대장 전송 여부 조회", description = "파라미터로 받은 event id와 contact를 받아 전송여부를 반환")
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PutMapping("/{eid}/status")
-    public ResponseEntity<?> checkIsSent(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<?> checkIsSent(@AuthenticationPrincipal User user, @PathVariable("eid")String eid, @RequestBody JsonNode params){
+        String uid = user.getUsername();
 
         Boolean isSent = params.get("status").asBoolean();
         String cid = params.get("contactId").asText();
@@ -113,8 +113,8 @@ public class ContactController {
     @Operation(summary = "특정 연락처의 정보 수정", description = "파라미터로 받은 event id와 연락처 정보를 수정하고 연락처 정보를 반환")
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @PutMapping("/{eid}")
-    public ResponseEntity<Contact> updateContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<Contact> updateContact(@AuthenticationPrincipal User user, @PathVariable("eid")String eid, @RequestBody JsonNode params){
+        String uid = user.getUsername();
 
         Contact contact = new Contact();
 
@@ -133,8 +133,8 @@ public class ContactController {
     @Operation(summary = "특정 연락처 삭제", description = "파라미터로 받은 event id와 연락처를 삭제하고 삭제한 연락처 id 반환")
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
     @DeleteMapping("/{eid}")
-    public ResponseEntity<String> deleteContact(@PathVariable("eid")String eid, @RequestBody JsonNode params){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<String> deleteContact(@AuthenticationPrincipal User user, @PathVariable("eid")String eid, @RequestBody JsonNode params){
+        String uid = user.getUsername();
 
         String contactId = params.get("contactId").asText();
 

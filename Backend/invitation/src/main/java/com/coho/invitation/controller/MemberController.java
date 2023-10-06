@@ -8,10 +8,11 @@ import com.coho.invitation.service.MemberService;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -21,8 +22,6 @@ import java.util.Optional;
 @RequestMapping("/api/members")
 @CrossOrigin(origins = "*")
 public class MemberController {
-    @Autowired
-    private HttpServletRequest request;
     @Autowired
     private final MemberService memberService;
     @Autowired
@@ -36,8 +35,8 @@ public class MemberController {
     /* 로그인한 사용자의 정보 조회 */
     @UserAuthorize
     @GetMapping("")
-    public ResponseEntity<Member> getMember(){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<Member> getMember(@AuthenticationPrincipal User user){
+        String uid = user.getUsername();
 
         Member member = memberService.getMember(uid).get();
 
@@ -120,8 +119,8 @@ public class MemberController {
     /* 회원 정보 수정 */
     @UserAuthorize
     @PutMapping("")
-    public ResponseEntity<String> updateUserInfo(@RequestBody JsonNode params){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<String> updateUserInfo(@AuthenticationPrincipal User user, @RequestBody JsonNode params){
+        String uid = user.getUsername();
 
         Member member = new Member();
         member.setUid(uid);
@@ -136,8 +135,8 @@ public class MemberController {
     /* 회원 탈퇴 */
     @UserAuthorize
     @DeleteMapping("")
-    public ResponseEntity<String> deleteUser(){
-        String uid = (String) request.getAttribute("uid");
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal User user){
+        String uid = user.getUsername();
 
         // 사용자 권한 'N' 처리 + manage 삭제
         memberService.deleteMember(uid);
