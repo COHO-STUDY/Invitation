@@ -103,6 +103,11 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public void updateRefreshToken(String uid,String refreshToken){
+        memberMapper.updateRefreshToken(uid,refreshToken);
+    }
+
+    @Override
     public void updateMember(Member member){
         memberMapper.updateMember(member);
     }

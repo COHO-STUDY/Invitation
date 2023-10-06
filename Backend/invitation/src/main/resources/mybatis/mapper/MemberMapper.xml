@@ -16,8 +16,14 @@
 
     <insert id="insertMember" parameterType="Member">
         insert into member
-        values (#{uid},#{name},#{email},#{auth});
+        values (#{uid},#{name},#{email},#{auth},#{refreshToken});
     </insert>
+
+    <update id="updateRefreshToken" parameterType="Map">
+        update member
+        set refreshToken = #{refreshToken}
+        where uid = #{uid};
+    </update>
 
     <update id="updateMember" parameterType="Member">
         update member

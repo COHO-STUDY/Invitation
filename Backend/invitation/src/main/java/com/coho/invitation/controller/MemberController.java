@@ -60,15 +60,22 @@ public class MemberController {
         // 사용자 정보 가져오기
         Member member = memberService.getUserInfo(authToken.getAccess_token());
 
-        // 회원 정보 확인하여 처음 로그인한 회원이면 회원가입
+        // 회원 체크
         Optional<Member> savedMember = memberService.getMember(member.getUid());
-        if(savedMember.isEmpty())
-            memberService.insertMember(member);
-        // 이미 회원가입한 사용자이면 DB의 사용자 정보 저장
-        else
+        // 회원가입 - 처음 로그인
+        if(savedMember.isEmpty()){
+            member.setRefreshToken(authToken.getRefresh_token());
+            memberService.insertMember(member);             // refresh token을 포함한 사용자 정보 저장
+        }
+        // 로그인 - 이미 가입한 사용자
+        else {
             member = savedMember.get();
-
+            memberService.updateRefreshToken(member.getUid(), authToken.getRefresh_token());        // DB의 refresh token 수정
+        }
         System.out.println(member.getUid() +" "+member.getName());
+
+        // refresh_token값 초기화
+        member.setRefreshToken("");
 
         // 서버 토큰 발급
         String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
@@ -86,24 +93,27 @@ public class MemberController {
 
         String uid = "K" + params.get("userId").asText();
         String access_token = params.get("accessToken").asText();
+        String refresh_token = "";
 
-        Optional<Member> savedMember= memberService.getMember(uid);
-
-        // 처음 로그인한 사용자 : 회원가입
+        // 회원 체크
+        Optional<Member> savedMember = memberService.getMember(uid);
+        // 회원가입 - 처음 로그인한 사용자
         if(savedMember.isEmpty()){
-            // 사용자 정보 가져오기
-            member = memberService.getUserInfo(access_token);
-            memberService.insertMember(member);
+            member = memberService.getUserInfo(access_token);       // 사용자 정보 가져오기
+            member.setRefreshToken(refresh_token);
+            memberService.insertMember(member);                     // member 저장
         }
         // 로그인
-        else
+        else {
             member = savedMember.get();
+            memberService.updateRefreshToken(member.getUid(), refresh_token);
+        }
+
+        // refresh_token값 초기화
+        member.setRefreshToken("");
 
         // 서버 토큰 발급
-        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"USER"));
-
-        System.out.println(jwt);
-
+        String jwt = tokenProvider.createToken(String.format("%s:%s",member.getUid(),"ROLE_USER"));
         headers.add("Authorization","Bearer "+jwt);
 
         return ResponseEntity.ok().headers(headers).body(member);
