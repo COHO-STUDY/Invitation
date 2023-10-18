@@ -50,6 +50,7 @@ public class MemberController {
         HttpHeaders headers = new HttpHeaders();
 
         String code = params.get("code").asText();
+        System.out.println(code);
 
         // 카카오 토큰 발급 요청
         KakaoOAuthToken authToken = memberService.getKakaoAccessToken(code);
@@ -90,7 +91,12 @@ public class MemberController {
 
         String uid = "K" + params.get("userId").asText();
         String access_token = params.get("accessToken").asText();
-        String refresh_token = "";
+        String refresh_token = params.get("refreshToken").asText();
+
+        System.out.println("android uid : "+ uid);
+        System.out.println("android access token : "+access_token);
+        System.out.println("android refresh token : "+ refresh_token);
+
 
         // 회원 체크
         Optional<Member> savedMember = memberService.getMember(uid);
