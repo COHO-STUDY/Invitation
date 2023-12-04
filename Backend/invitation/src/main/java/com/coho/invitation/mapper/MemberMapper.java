@@ -19,6 +19,8 @@ public interface MemberMapper {
 
     void updateRefreshToken(@Param("uid")String uid, @Param("refreshToken")String refreshToken);
 
+    String getRefreshToken(String uid);
+
     void updateMember(Member member);
 
     void deleteMember(String uid);

@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface MemberService {
     KakaoOAuthToken getKakaoAccessToken(String code);
     Member getUserInfo(String accessToken);
+    KakaoOAuthToken refreshKakaoToken(String uid, String refreshToken);
+    String getRefreshToken(String uid);
     Optional<Member> getMember(String uid);
     List<Member> getMemberList();
     void insertMember(Member member);

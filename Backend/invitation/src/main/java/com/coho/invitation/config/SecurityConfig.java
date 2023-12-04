@@ -18,11 +18,9 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final WebConfig webConfig;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, WebConfig webConfig) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.webConfig = webConfig;
     }
 
     @Bean

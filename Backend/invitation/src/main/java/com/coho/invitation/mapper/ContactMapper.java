@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface ContactMapper {
     List<Contact> getContactList(@Param("uid")String uid,@Param("eid")String eid, @Param("con")String con);
+    List<String> getFriendsUuid(@Param("uid")String uid, @Param("eid") String eid);
     void addContacts(Contact contact);
+    void addKakaoContacts(List<Contact> contacts);
     void checkSent(@Param("is_sent")Boolean is_sent,@Param("contactId")String contactId, @Param("muid")String uid,@Param("eid")String eid);
     void updateContact(Contact contact);
     void deleteContact(@Param("contactId")String contactId, @Param("muid")String uid,@Param("eid")String eid);

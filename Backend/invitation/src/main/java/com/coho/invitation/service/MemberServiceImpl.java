@@ -78,12 +78,51 @@ public class MemberServiceImpl implements MemberService{
                         .build())
                 .retrieve().bodyToMono(JsonNode.class).block();
 
+        System.out.println(response);
+
         member.setUid("K"+response.get("id").asText());
-        member.setName(response.get("properties").get("nickname").asText());
+        if (response.has("properties"))
+            member.setName(response.get("properties").get("nickname").asText());
+        else
+            member.setName("unknown user");
         if(!response.get("kakao_account").get("email_needs_agreement").asBoolean())
             member.setEmail(response.get("kakao_account").get("email").asText());
 
         return member;
+    }
+
+    /* kakao token 갱신하기 : refresh token으로 access token 발급 */
+    @Override
+    public KakaoOAuthToken refreshKakaoToken(String uid,String refreshToken){
+        KakaoOAuthToken token = new KakaoOAuthToken();
+        WebClient webClient = WebClient.builder()
+                .baseUrl(KAKAO_LOGIN_API_BASE_URL)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .build();
+
+        JsonNode response = webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/oauth/token")
+                        .queryParam("grant_type","refresh_token")
+                        .queryParam("client_id",KAKAO_API_KEY)
+                        .queryParam("refresh_token",refreshToken)
+                        .build())
+                .retrieve().bodyToMono(JsonNode.class).block();
+
+        if(response.has("refresh_token")){
+            token.setRefresh_token(response.get("refresh_token").asText());
+            token.setRefresh_token_expires_in(response.get("refresh_token_expires_in").asInt());
+            memberMapper.updateRefreshToken(uid,token.getRefresh_token());
+        }
+
+        token.setAccess_token(response.get("access_token").asText());
+        token.setExpires_in(response.get("expires_in").asInt());
+
+        return token;
+    }
+
+    public String getRefreshToken(String uid){
+        return memberMapper.getRefreshToken(uid);
     }
 
     /* uid로 사용자 찾기 */

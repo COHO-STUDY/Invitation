@@ -12,9 +12,23 @@
         order by is_sent asc,is_kakao_used desc;
     </select>
 
+    <select id="getFriendsUuid" parameterType="Map" resultType="HashMap">
+        select contact_id
+        from contact
+        where muid = #{uid} and eid = #{eid};
+    </select>
+
     <insert id="addContacts" parameterType="Contact">
         insert into contact
         values (#{contactId}, #{muid}, #{eid}, #{name}, #{phoneNum},0,#{is_kakao_used});
+    </insert>
+
+    <insert id="addKakaoContacts" parameterType="HashMap">
+        insert ignore into contact (contact_id,muid,eid,name,is_sent,is_kakao_used)
+        values
+            <foreach collection="list" item="item" separator=" , ">
+                (#{item.contactId},#{item.muid}, #{item.eid}, #{item.name}, 0,#{item.is_kakao_used})
+            </foreach>;
     </insert>
 
     <update id="checkSent" parameterType="Map">
