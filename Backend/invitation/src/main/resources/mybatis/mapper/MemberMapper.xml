@@ -25,6 +25,12 @@
         where uid = #{uid};
     </update>
 
+    <select id="getRefreshToken" parameterType="String">
+        select refreshToken
+        from member
+        where uid = #{uid};
+    </select>
+
     <update id="updateMember" parameterType="Member">
         update member
         set name = #{name},

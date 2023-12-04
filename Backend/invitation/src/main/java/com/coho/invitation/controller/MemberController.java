@@ -55,6 +55,8 @@ public class MemberController {
         // 카카오 토큰 발급 요청
         KakaoOAuthToken authToken = memberService.getKakaoAccessToken(code);
 
+        System.out.println(authToken.getAccess_token());
+
         // 사용자 정보 가져오기
         Member member = memberService.getUserInfo(authToken.getAccess_token());
 
