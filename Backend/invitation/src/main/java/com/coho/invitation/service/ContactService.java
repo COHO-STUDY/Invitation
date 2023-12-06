@@ -13,6 +13,7 @@ public interface ContactService {
     List<Contact> getContactList(String uid, String eid, String condition);
     void addContact(Contact contact);
     void addKakaoContacts(List<Contact> contacts);
+    void sendKakaoMessages(String accessToken, String uuids, String uid, String eid);
     void checkSent(Boolean is_sent,String contactId, String uid,String eid);
     void updateContact(Contact contact);
     void deleteContact(String contactId, String uid,String eid);
