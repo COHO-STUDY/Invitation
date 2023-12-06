@@ -3,10 +3,11 @@ package com.coho.invitation.service;
 import com.coho.invitation.dto.Contact;
 import com.coho.invitation.mapper.ContactMapper;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.v3.core.util.Json;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
@@ -18,10 +19,8 @@ public class ContactServiceImpl implements ContactService{
 
     private final ContactMapper contactMapper;
     private static final String KAKAO_API_BASE_URL = "https://kapi.kakao.com";
-    @Value("${KAKAO_API_KEY}")
-    private String KAKAO_API_KEY;
-    @Value("${REDIRECT_URI}")
-    private String REDIRECT_URI;
+    @Value("${CARD_URI}")
+    private String CARD_URI;
 
     public ContactServiceImpl(ContactMapper contactMapper) {
         this.contactMapper = contactMapper;
@@ -70,6 +69,32 @@ public class ContactServiceImpl implements ContactService{
     @Override
     public void addKakaoContacts(List<Contact> contacts){
         contactMapper.addKakaoContacts(contacts);
+    }
+    @Override
+    public void sendKakaoMessages(String accessToken, String uuids, String uid, String eid){
+        // 카카오 메세지 1회에 5개 전송 가능 => 수십~수백개 전송
+        WebClient webClient = WebClient.builder()
+                .baseUrl(KAKAO_API_BASE_URL)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+accessToken)
+                .build();
+
+        webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/api/talk/friends/message/scrap/send")
+                        .build())
+                .body(BodyInserters.fromFormData("receiver_uuids",uuids)
+                        .with("request_url",CARD_URI))
+                .retrieve().bodyToMono(JsonNode.class)
+                .subscribe(e -> {
+                    if (e.has("successful_receiver_uuids")){
+                        for(JsonNode uuid:e.get("successful_receiver_uuids")){
+                            // 초대장 전송 여부 체크
+                            checkSent(true,uuid.asText(),uid,eid);
+                        }
+                    }
+                });
+
     }
     @Override
     public void checkSent(Boolean is_sent,String contactId, String uid,String eid){

@@ -69,7 +69,7 @@ public class MemberServiceImpl implements MemberService{
         WebClient webClient = WebClient.builder()
                 .baseUrl(KAKAO_API_BASE_URL)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+accessToken)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .build();
 
         JsonNode response = webClient.get()

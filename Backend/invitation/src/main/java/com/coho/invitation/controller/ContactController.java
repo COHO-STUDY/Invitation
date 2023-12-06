@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,7 +52,7 @@ public class ContactController {
     /* 연락처 카카오톡 친구불러오기로 추가 */
     @Operation(summary = "로그인한 사용자의 카카오톡 친구 목록 불러오기", description = "카카오톡 친구 목록 가져오기 API를 사용하여 현재 사용자의 친구 목록을 가져옴")
     @Parameter(name="event id", description = "선택한 행사의 event id를 전송")
-    @PostMapping("/kakao/{eid}")
+    @PostMapping("/{eid}/kakao")
     public ResponseEntity<String> addContactList(@AuthenticationPrincipal User user, @PathVariable("eid")String eid) {
         String uid = user.getUsername();
 
@@ -92,22 +93,27 @@ public class ContactController {
 
     /* 카카오톡 메시지 전송 */
     @Operation(summary = "카카오톡 메시지 전송", description = "모바일 초대장 링크를 카카오톡 메시지 전송 api를 사용해 전송")
-    @Parameter(name="event id", description = "선택한 행사의 event id를 전송")
-    @PostMapping("/kakao/message/{eid}")
-    public ResponseEntity<?> sendKakaoMessages(@AuthenticationPrincipal User user,@PathVariable("eid") String eid, @RequestBody String cid){
+    @Parameter(name="event id", description = "선택한 행사의 event id를 전송, 메세지 전송할 친구리스트를 [\"친구1 uuid\",\"친구2 uuid\",...] 형태로 전송")
+    @PostMapping("/{eid}/kakao/message")
+    public ResponseEntity<?> sendKakaoMessages(@AuthenticationPrincipal User user,@PathVariable("eid") String eid, @RequestBody String[] friends){
         String uid = user.getUsername();
 
         // refresh token으로 access token 다시 불러오기
         String accessToken = memberService.refreshKakaoToken(uid,memberService.getRefreshToken(uid)).getAccess_token();
 
-        // 카카오톡 메시지 api 호출
-        // access_token, uuid 배열, template_object를 사용하여 호출
+        // 카카오톡 메시지 api 호출 (API당 5개씩만 전송 가능)
+        String uuids;
+        // uuid 5개씩 묶어서 처리
+        for (int i=0; i < friends.length; i+=5){
+            // 0,5,10,15,20
+            uuids = String.join("\",\"",Arrays.copyOfRange(friends,i,Math.min(i+5,friends.length)));
+            uuids = "[\"" + uuids + "\"]";
+            System.out.println(uuids);
+            // access_token, uuid 배열, template_object를 사용하여 호출
+            contactService.sendKakaoMessages(accessToken,uuids,uid,eid);
+        }
 
-
-        // 초대장 전송 여부 체크
-        contactService.checkSent(true,cid,uid,eid);
-
-        return ResponseEntity.ok().body(cid);
+        return ResponseEntity.ok().body("모두 전송 성공");
     }
 
     /* 초대장 전송 여부 체크 */
