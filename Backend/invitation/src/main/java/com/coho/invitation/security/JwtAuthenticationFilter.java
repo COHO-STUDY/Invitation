@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 토큰에서 사용자 정보 추출
         String token = parseBearerToken(request);
-        System.out.println("JWT"+ token);
+//        System.out.println("JWT"+ token);
         User user = parseMemberSpec(token);
         if (!user.getUsername().equals("anonymous"))
             System.out.println(user.getUsername());
