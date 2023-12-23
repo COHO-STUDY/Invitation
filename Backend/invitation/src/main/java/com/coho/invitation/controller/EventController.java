@@ -36,6 +36,7 @@ public class EventController {
     @GetMapping("/progressing")
     public ResponseEntity<List<Event>> getEventsProgressing(@AuthenticationPrincipal User user){
         String uid = user.getUsername();
+        System.out.println("select progressing event "+ uid);
 
         List<Event> eventList = eventService.getEventsProgressing(uid);
 
@@ -47,6 +48,7 @@ public class EventController {
     @GetMapping("/done")
     public ResponseEntity<List<Event>> getEventsDone(@AuthenticationPrincipal User user){
         String uid = user.getUsername();
+        System.out.println("select done event "+ uid);
 
         List<Event> eventList = eventService.getEventsDone(uid);
 
@@ -59,6 +61,7 @@ public class EventController {
     @GetMapping("/{eid}")
     public ResponseEntity<Event> getEvent(@PathVariable("eid") String eid, @AuthenticationPrincipal User user){
         String uid = user.getUsername();
+        System.out.println("select one event "+ uid);
 
         /* 권한이 없다면 조회 불가능 - spring interceptor로..? */
         if(!eventService.checkAuthority(eid).contains(uid))
@@ -75,6 +78,7 @@ public class EventController {
     @PostMapping("")
     public ResponseEntity<Event> addEvent(@AuthenticationPrincipal User user, @RequestBody JsonNode params){
         String uid = user.getUsername();
+        System.out.println("insert event "+ uid);
         Event event = new Event();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
@@ -96,6 +100,8 @@ public class EventController {
     @PostMapping("/auth/{eid}")
     public ResponseEntity<String> addAuthority(@AuthenticationPrincipal User user, @PathVariable("eid") String eid, @RequestBody JsonNode params){
         String uid = user.getUsername();
+        System.out.println("insert event auth"+ uid);
+
         String newUid = params.get("uid").asText();
 
         // 현재 사용자가 권한자 인지 확인
@@ -114,6 +120,7 @@ public class EventController {
     @PutMapping("/{eid}")
     public ResponseEntity<String> updateEvent(@AuthenticationPrincipal User user, @PathVariable("eid") String eid, @RequestBody JsonNode params){
         String uid = user.getUsername();
+        System.out.println("update event "+ uid);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         Event event = new Event();
@@ -139,6 +146,7 @@ public class EventController {
     @DeleteMapping("/{eid}")
     public ResponseEntity<String> deleteEvent(@AuthenticationPrincipal User user, @PathVariable("eid") String eid){
         String uid = user.getUsername();
+        System.out.println("delete event "+ uid);
 
         /* 권한이 있을 경우에만 삭제 가능 */
         if(!eventService.checkAuthority(eid).contains(uid))
@@ -154,6 +162,7 @@ public class EventController {
     @DeleteMapping("/auth/{eid}")
     public ResponseEntity<String> deleteAuthority(@AuthenticationPrincipal User user, @PathVariable("eid") String eid){
         String uid = user.getUsername();
+        System.out.println("delete event auth "+ uid);
 
         /* 현재 로그인한 사용자의 행사 권한 삭제 */
         eventService.deleteAuthority(eid,uid);

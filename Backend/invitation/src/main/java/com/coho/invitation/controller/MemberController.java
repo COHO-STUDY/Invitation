@@ -71,6 +71,7 @@ public class MemberController {
         else {
             member = savedMember.get();
             memberService.updateRefreshToken(member.getUid(), authToken.getRefresh_token());        // DB의 refresh token 수정
+
         }
         System.out.println(member.getUid() +" "+member.getName());
 
