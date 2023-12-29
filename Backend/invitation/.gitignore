@@ -8,6 +8,9 @@ build/
 ## application properties ##
 application-KEY.yml
 
+## Docker ##
+#build/libs/Dockerfile
+
 ### STS ###
 .apt_generated
 .classpath

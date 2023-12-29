@@ -32,9 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 토큰에서 사용자 정보 추출
         String token = parseBearerToken(request);
-        System.out.println(token);
+//        System.out.println("JWT"+ token);
         User user = parseMemberSpec(token);
-        System.out.println(user.getUsername());
+        if (!user.getUsername().equals("anonymous"))
+            System.out.println(user.getUsername());
         // 유효성 검사 후 유효한 경우, Authenticaiton 객체를 생성하여 Spring Security 컨텍스트에 저장
         AbstractAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(user, token,user.getAuthorities());
         authenticated.setDetails(new WebAuthenticationDetails(request));

@@ -69,8 +69,10 @@ public class MemberController {
         }
         // 로그인 - 이미 가입한 사용자
         else {
-            member = savedMember.get();
             memberService.updateRefreshToken(member.getUid(), authToken.getRefresh_token());        // DB의 refresh token 수정
+            // 이름과 이메일이 다를 시 업데이트
+            if (!savedMember.get().getName().equals(member.getName()) | !savedMember.get().getEmail().equals(member.getEmail()))
+                memberService.updateMember(member);
         }
         System.out.println(member.getUid() +" "+member.getName());
 
@@ -100,18 +102,21 @@ public class MemberController {
         System.out.println("android refresh token : "+ refresh_token);
 
 
-        // 회원 체크
+        // 기존 사용자 정보 체크
         Optional<Member> savedMember = memberService.getMember(uid);
+        // 로그인한 사용자 정보 가져오기
+        member = memberService.getUserInfo(access_token);
         // 회원가입 - 처음 로그인한 사용자
         if(savedMember.isEmpty()){
-            member = memberService.getUserInfo(access_token);       // 사용자 정보 가져오기
             member.setRefreshToken(refresh_token);
             memberService.insertMember(member);                     // member 저장
         }
         // 로그인
         else {
-            member = savedMember.get();
             memberService.updateRefreshToken(member.getUid(), refresh_token);
+            // 이름과 이메일이 다를 시 업데이트
+            if (!savedMember.get().getName().equals(member.getName()) | !savedMember.get().getEmail().equals(member.getEmail()))
+                memberService.updateMember(member);
         }
 
         // refresh_token값 초기화

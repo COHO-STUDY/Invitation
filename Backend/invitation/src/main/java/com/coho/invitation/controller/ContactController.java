@@ -116,6 +116,9 @@ public class ContactController {
         return ResponseEntity.ok().body("모두 전송 성공");
     }
 
+    /* 문자 메시지 전송 */
+
+
     /* 초대장 전송 여부 체크 */
     @Operation(summary = "특정 연락처의 초대장 전송 여부 조회", description = "파라미터로 받은 event id와 contact를 받아 전송여부를 반환")
     @Parameter(name="str", description = "선택한 행사의 event id를 전송")
